@@ -94,9 +94,9 @@ When authentication and ownership are implemented, only the post author can edit
 
 ### 3.4 Coursework Demo User
 
-Authentication is not allowed to block completion of the required CodePath functionality.
+Authentication is part of the intended MVP because all write interactions require an account.
 
-If authentication cannot be completed before the deadline, all required CRUD and interaction flows must remain testable for the grader.
+The implementation must use the simplest reliable email/password flow so authentication does not consume time needed for the required CodePath features.
 
 ---
 
@@ -236,25 +236,30 @@ The following features must be completed:
 11. Search posts by title
 12. Sort posts by creation time
 13. Sort posts by support count
-14. Loading states
-15. Empty states
-16. Basic error states
-17. Sample posts, comments, and support counts
-18. README using the required CodePath template
-19. GIF walkthrough
+14. Supabase authentication with email and password
+15. Email confirmation disabled for the demo
+16. Display name collected during registration or first sign-in
+17. Guest read-only behavior
+18. Protected create, comment, and support actions
+19. Author information on posts and comments
+20. Ownership-based edit and delete permissions
+21. Sign out
+22. Loading states
+23. Empty states
+24. Basic error states
+25. Sample posts, comments, and support counts
+26. README using the required CodePath template
+27. GIF walkthrough
 
-### 8.2 P1 — Time-Permitting MVP Extension
+### 8.2 P1 — Post-MVP Enhancements
 
 After all P0 features are complete:
 
-1. Supabase authentication with email and password
-2. Email confirmation disabled for the demo
-3. Display name collected during registration or first sign-in
-4. Guest read-only behavior
-5. Protected create, comment, and support actions
-6. Author information on posts and comments
-7. Ownership-based edit and delete permissions
-8. Sign out
+1. Profile editing for display name
+2. Avatar editing
+3. Bio editing
+4. Improved authorization policies
+5. Mobile responsiveness improvements
 
 ### 8.3 P2 — Stretch Features
 
@@ -693,9 +698,7 @@ The React code should be divided into reasonable pages and reusable components w
 - Users provide external image URLs at their own discretion.
 - Do not store passwords in application tables.
 
-### Authentication Extension
-
-When authentication is implemented:
+### Authentication
 
 - Supabase Auth manages credentials.
 - Login email must not be rendered publicly.

@@ -4,7 +4,7 @@
 
 - **Project:** Volunteer Social Hub
 - **Document:** Implementation Plan
-- **Status:** Draft for approval
+- **Status:** Approved
 - **Branch:** `master`
 - **Related documents:**
   - `docs/01-mini-prd.md`
@@ -363,7 +363,7 @@ image_url
 - Guest can view the feed.
 - Member can create a post.
 - New post appears after redirect or refresh.
-- Feed cards contain only rubric-required fields.
+-  Feed cards contain only the fields defined in BR-03.
 - Empty title is rejected.
 
 ### Commit and Push
@@ -494,7 +494,7 @@ git push origin master
 
 ### Goal
 
-Finish the remaining functional rubric items.
+Finish the remaining P0 features.
 
 ### Search Tasks
 

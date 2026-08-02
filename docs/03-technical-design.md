@@ -15,9 +15,9 @@
 
 The implementation must:
 
-1. Complete all required CodePath HobbyHub features.
-2. Follow the coding patterns used in the seven WEB102 labs whenever practical.
-3. Add only a small amount of new knowledge for basic authentication and relationships.
+1. Complete all required product features.
+2. Use simple, direct React and Supabase patterns throughout the application.
+3. Keep authentication and relational data handling intentionally small.
 4. Allow guests to read.
 5. Require login through the normal UI for all write actions.
 6. Associate posts and comments with profiles.
@@ -61,21 +61,23 @@ The implementation must:
 
 ---
 
-## 3. CodePath Alignment
+## 3. Implementation Conventions
 
-The project combines the lab patterns as follows:
+Use the following patterns consistently:
 
-| CodePath Unit | Pattern Used |
-|---|---|
-| Unit 1 | Components, props, import/export, plain CSS |
-| Unit 2 | `useState`, click handlers, counter updates |
-| Unit 3 | Controlled forms and object state |
-| Unit 4 | Async functions and Vite environment variables |
-| Unit 5 | `useEffect`, conditional rendering, `.map()`, `.filter()` |
-| Unit 6 | React Router, `Link`, `Outlet`, `useParams`, no-match route |
-| Unit 7 | Supabase `select`, `insert`, `update`, `delete`, `order` |
+- Functional React components
+- Props for passing data and callbacks
+- `useState` for local component state
+- Controlled forms with object state
+- `useEffect` for initial data loading and route-dependent fetches
+- `.map()` for rendering lists
+- `.filter()` for client-side search
+- React Router with `Link`, `Outlet`, and `useParams`
+- Direct Supabase CRUD calls with `select`, `insert`, `update`, `delete`, and `order`
+- Plain CSS without a UI framework
+- Small components and page files without unnecessary abstraction layers
 
-The main new topic is basic Supabase Auth:
+Basic Supabase Auth uses:
 
 - `signUp`
 - `signInWithPassword`
@@ -111,9 +113,9 @@ The browser communicates directly with Supabase using the publishable client key
 
 ### MVP Decision
 
-Row Level Security is disabled on the application tables for the CodePath submission.
+Row Level Security is disabled on the application tables for the initial MVP.
 
-This follows the simple CRUD setup used in Unit 7.
+This keeps the first implementation small and reduces database-policy setup during core feature development.
 
 ### What Authentication Still Does
 
@@ -136,11 +138,11 @@ With RLS disabled:
 - These checks guide normal users through the intended experience.
 - A technically knowledgeable person could bypass the UI and call the public Supabase API directly.
 
-Therefore, this version is suitable only for coursework and sample data.
+Therefore, this version is suitable only for an MVP using sample or non-sensitive data.
 
 ### Future Hardening
 
-Before a real U.S. Hunger or private-community deployment:
+Before any real deployment that uses private or sensitive data:
 
 1. Enable RLS.
 2. Add guest-read policies.
@@ -210,7 +212,7 @@ The Supabase publishable key is expected to be used by the browser. Never put a 
 
 ## 8. Application Routes
 
-Use `BrowserRouter`, nested routes, `Layout`, and `Outlet` as taught in Unit 6.
+Use `BrowserRouter`, nested routes, `Layout`, and `Outlet` for shared navigation and page rendering.
 
 | Route | Page |
 |---|---|
@@ -226,7 +228,7 @@ Use `BrowserRouter`, nested routes, `Layout`, and `Outlet` as taught in Unit 6.
 
 Use `Link` for normal navigation and `useParams()` for post IDs.
 
-For redirects after database operations, `window.location` is acceptable because it matches the Unit 7 lab.
+For redirects after database operations, `window.location` is acceptable for this small application.
 
 ---
 
@@ -338,7 +340,7 @@ This is application behavior, not production-grade database authorization while 
 
 ## 11. Form Pattern
 
-Use the controlled-object-state pattern from Unit 3.
+Use one controlled object state for create and edit forms.
 
 ```js
 const [post, setPost] = useState({
@@ -391,7 +393,7 @@ Only fields required by the feed card are selected.
 
 Search runs on the posts already loaded into React state.
 
-Use the Unit 5 pattern:
+Use the following state-and-filter pattern:
 
 ```text
 searchInput
@@ -472,7 +474,7 @@ Before update:
 - Confirm the session user ID equals `author_id`.
 - Validate the title.
 
-Use the Unit 7 update pattern:
+Use a direct Supabase update:
 
 ```js
 await supabase
@@ -510,7 +512,7 @@ Redirect home after success.
 
 ## 18. Upward-Arrow Count
 
-Use the direct Unit 7 count-update pattern.
+Use a direct count-update pattern.
 
 Flow:
 
@@ -528,7 +530,7 @@ await supabase
   .eq("id", post.id);
 ```
 
-This is intentionally simple and not atomic under heavy concurrency. That limitation is acceptable for the coursework demo.
+This is intentionally simple and not atomic under heavy concurrency. That limitation is acceptable for the initial MVP.
 
 ---
 
@@ -612,7 +614,7 @@ Required relationships:
 - `comments.author_id` references `profiles.id`.
 - `comments.post_id` references `posts.id` with `ON DELETE CASCADE`.
 
-Disable RLS on these application tables for the CodePath MVP.
+Disable RLS on these application tables for the initial MVP.
 
 Do not enable Realtime unless a feature needs it.
 

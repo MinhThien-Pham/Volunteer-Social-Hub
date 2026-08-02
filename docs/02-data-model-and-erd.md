@@ -11,7 +11,7 @@
 
 ## 1. Data Modeling Principles
 
-The data model must support the required CodePath HobbyHub features while preserving a straightforward path to authentication, user profiles, and ownership-based permissions.
+The data model must support the complete P0 feature set while preserving a straightforward path to authentication, user profiles, and ownership-based permissions.
 
 The initial schema includes three application entities:
 
@@ -21,7 +21,7 @@ The initial schema includes three application entities:
 
 Authentication credentials are not stored in application tables. The authentication provider manages login email, password, and session data.
 
-For the CodePath MVP, Supabase Row Level Security (RLS) is disabled to keep CRUD implementation aligned with the Unit 7 lab. The schema still stores `author_id` on posts and comments so the React application can provide the intended guest/member/author experience and so database authorization can be added later without redesigning ownership relationships.
+For the initial MVP, Supabase Row Level Security (RLS) is disabled to reduce database-policy setup during core feature development. The schema still stores `author_id` on posts and comments so the React application can provide the intended guest/member/author experience and so database authorization can be added later without redesigning ownership relationships.
 
 The design intentionally does not include separate entities for:
 
@@ -123,7 +123,7 @@ When a post is edited:
 
 ### Ownership
 
-In the normal application flow, only the post author should be allowed to edit or delete the post. For the CodePath MVP, this check is performed in React because Supabase Row Level Security (RLS) is disabled.
+In the normal application flow, only the post author should be allowed to edit or delete the post. For the initial MVP, this check is performed in React because Supabase Row Level Security (RLS) is disabled.
 
 ---
 
@@ -238,7 +238,7 @@ The behavior for posts and comments after account deletion will be decided befor
 
 ## 7. Upvote Modeling
 
-The CodePath requirement allows one user to click the upward arrow any number of times.
+The approved product behavior allows one registered member to click the upward arrow any number of times.
 
 The application does not need to record who clicked or prevent repeated clicks.
 
@@ -325,7 +325,7 @@ Sign up with email and password
 
 Google sign-in remains an optional future enhancement.
 
-The CodePath MVP uses authentication plus frontend checks:
+The initial MVP uses authentication plus frontend checks:
 
 - Guests are prompted to sign in before normal write actions.
 - Posts and comments are associated with authenticated profile IDs.
@@ -468,5 +468,5 @@ These should be added only when the corresponding feature is approved for implem
 10. Google sign-in remains optional.
 11. Upvotes use one integer count and do not require a separate table.
 12. The login email remains private.
-13. RLS is disabled for the CodePath MVP to match the simple Unit 7 CRUD approach.
-14. Frontend login and ownership checks define the normal demo flow, but database-level authorization is deferred until post-submission hardening.
+13. RLS is disabled for the initial MVP to reduce database-policy setup during core feature development.
+14. Frontend login and ownership checks define the normal MVP flow, but database-level authorization is deferred to a security-hardening milestone.

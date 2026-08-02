@@ -5,8 +5,8 @@
 - **Project:** Volunteer Social Hub
 - **Document:** Mini PRD
 - **Status:** Approved
-- **Course:** CodePath WEB102 — Unit 8 Final Project: HobbyHub
-- **Primary priority:** Complete all required CodePath features before adding stretch features
+- **Scope:** Initial MVP
+- **Primary priority:** Complete all P0 features before starting P1 or P2 work
 - **Implementation constraint:** Approximately 5–6 hours of focused development time
 - **Platform:** Desktop-first responsive web application
 
@@ -28,7 +28,7 @@ The application provides a simple social experience inspired by Reddit and Faceb
 - Sorting
 - Create, edit, and delete operations
 
-The CodePath version is designed for a general volunteer community. The application may later serve as a foundation for a private internal community for U.S. Hunger employees.
+The initial MVP is designed for a general volunteer community. Future organization-specific versions may add private membership, managed sign-in, and stronger access controls.
 
 ---
 
@@ -90,13 +90,13 @@ A registered member can:
 
 A post author is a registered member who created a post.
 
-In the normal application flow, only the post author can edit or delete that post. For the CodePath MVP, this ownership check is enforced by the React UI rather than Supabase Row Level Security (RLS).
+In the normal application flow, only the post author can edit or delete that post. For the initial MVP, this ownership check is enforced by the React UI rather than Supabase Row Level Security (RLS).
 
-### 3.4 Coursework Demo User
+### 3.4 MVP Implementation Constraint
 
 Authentication is part of the intended MVP because all write interactions require an account.
 
-The implementation must use the simplest reliable email/password flow so authentication does not consume time needed for the required CodePath features.
+The implementation must use the simplest reliable email/password flow so authentication does not delay the P0 feature set.
 
 ---
 
@@ -123,7 +123,7 @@ Each post should have a dedicated page where its content, image, support count, 
 
 ### 4.5 Content ownership should be clear
 
-When authentication is available, posts and comments should be associated with a user, and only the original author should be able to modify or delete their post.
+Posts and comments must be associated with a registered user, and only the original author should be able to modify or delete their post through the normal application flow.
 
 ---
 
@@ -145,9 +145,9 @@ Users should be able to:
 
 ## 6. Goals
 
-### G1 — Complete the CodePath rubric
+### G1 — Complete the P0 feature set
 
-All required HobbyHub features must work end to end.
+All P0 features defined in this document must work end to end.
 
 ### G2 — Persist application data
 
@@ -205,7 +205,7 @@ The following features are not part of the core MVP:
 - Full profile pages
 - Bio and social links
 - Google sign-in
-- U.S. Hunger email-domain restrictions
+- Organization-specific email-domain restrictions
 - Direct image uploads
 - Multiple-image galleries
 - Admin dashboards
@@ -218,7 +218,7 @@ The following features are not part of the core MVP:
 
 ## 8. MVP Scope
 
-### 8.1 P0 — Required Submission MVP
+### 8.1 P0 — Required MVP
 
 The following features must be completed:
 
@@ -247,7 +247,7 @@ The following features must be completed:
 23. Empty states
 24. Basic error states
 25. Sample posts, comments, and support counts
-26. README using the required CodePath template
+26. README with a project description, setup instructions, feature checklist, known limitations, and walkthrough
 27. GIF walkthrough
 
 ### 8.2 P1 — Post-MVP Enhancements
@@ -291,20 +291,20 @@ Possible future additions include:
 - Deleting one's own comments
 - Improved mobile responsiveness
 
-### 9.2 Future U.S. Hunger Version
+### 9.2 Future Private Organization Version
 
-A future internal version may include:
+A future organization-specific version may include:
 
-- Access limited to verified `@ushunger.org` accounts
+- Access limited to verified organization-managed accounts
 - Google Workspace sign-in
 - A members-only feed
-- Employee profiles
+- Member profiles
 - Organization-specific community guidelines
 - Optional project and location tags
 - Stronger access-control policies
 - Moderator or administrator roles
 
-The CodePath project must not be presented as an official or approved U.S. Hunger product.
+The project must not be presented as an official product of any organization without explicit authorization.
 
 ---
 
@@ -466,7 +466,7 @@ The CodePath project must not be presented as an official or approved U.S. Hunge
 - A guest attempts a protected action.
 - A member attempts to edit or delete another user's post.
 - The display name is empty.
-- Authentication is not completed before the deadline.
+- Authentication setup fails or blocks a required write flow.
 
 ---
 
@@ -525,14 +525,14 @@ The required search behavior applies to post titles only.
 
 - Edit and delete actions originate from the individual post page.
 - In the normal application flow, only the author may edit or delete a post.
-- For the CodePath MVP, the author check is performed in React because RLS is disabled.
+- For the initial MVP, the author check is performed in React because RLS is disabled.
 - Database-level ownership enforcement is future security hardening.
 
 ### BR-10 — Login Email
 
 - Email is used only as a sign-in credential.
 - Login email is not displayed publicly.
-- Email confirmation is not required for the CodePath demo.
+- Email confirmation is not required for the MVP demo.
 
 ### BR-11 — Guest Controls
 
@@ -554,7 +554,7 @@ The system must retrieve posts from a persistent database.
 
 ### FR-02 — Render the Home Feed
 
-The system must render one card per post using the feed-card content required by the rubric.
+The system must render one card per post using the feed-card content defined in BR-03.
 
 ### FR-03 — Create a Post
 
@@ -642,7 +642,7 @@ Users should easily recognize how to:
 
 For the small demo dataset, feed and post pages should normally load within a few seconds on a standard internet connection.
 
-Large-scale performance is not a requirement for this coursework MVP.
+Large-scale performance is not a requirement for the initial MVP.
 
 ### NFR-03 — Persistence
 
@@ -698,14 +698,14 @@ The React code should be divided into reasonable pages and reusable components w
 - Login email must not be rendered publicly.
 - The client must not store raw passwords.
 - Protected actions must check for a valid session.
-- For the CodePath MVP, ownership checks are implemented in the React UI; database-level enforcement is deferred until RLS is enabled.
+- For the initial MVP, ownership checks are implemented in the React UI; database-level enforcement is deferred until RLS is enabled.
 - Environment configuration and credentials must not be committed to the repository.
 
-### Coursework Limitation
+### MVP Security Limitation
 
-Supabase Row Level Security (RLS) is disabled for the CodePath MVP to keep the CRUD implementation aligned with the Unit 7 lab. Authentication and frontend ownership checks still guide the normal user flow, but the database does not prevent a technically knowledgeable person from bypassing the React UI and calling the public Supabase API directly.
+Supabase Row Level Security (RLS) is disabled for the initial MVP to reduce database-policy setup during core feature development. Authentication and frontend ownership checks still guide the normal user flow, but the database does not prevent a technically knowledgeable person from bypassing the React UI and calling the public Supabase API directly.
 
-The MVP must use sample/demo content only, must not contain private U.S. Hunger data, and must not be described as production-secure. RLS and database authorization policies are required before any real organizational deployment.
+The MVP must use sample or non-sensitive content only and must not be described as production-secure. RLS and database authorization policies are required before any deployment that stores private or sensitive data.
 
 ---
 
@@ -786,7 +786,7 @@ The MVP must use sample/demo content only, must not contain private U.S. Hunger 
 
 The core MVP is complete when:
 
-1. All required CodePath HobbyHub features work end to end.
+1. All P0 features work end to end.
 2. Posts are stored in a persistent database.
 3. Comments are saved and retrieved for the correct post.
 4. Support counts are saved.
@@ -796,13 +796,13 @@ The core MVP is complete when:
 8. Happy-path demo flows have no blocking errors.
 9. The application contains sample posts.
 10. The application contains sample comments and varied support counts.
-11. The README follows the required CodePath template.
+11. The README includes the project description, setup instructions, feature checklist, known limitations, and walkthrough.
 12. All completed features are marked with `[x]`.
 13. A GIF walkthrough is included.
 14. Git history contains meaningful milestone commits.
 15. The application runs locally.
-16. Deployment is completed only if time remains after the submission requirements are satisfied.
-17. Basic signup, sign-in, sign-out, guest restrictions, and author display work without breaking the required CodePath flows.
+16. Deployment is completed only after all P0 features and required documentation are complete.
+17. Basic signup, sign-in, sign-out, guest restrictions, and author display work without breaking the P0 flows.
 
 ---
 
@@ -810,7 +810,7 @@ The core MVP is complete when:
 
 ### Primary Metrics
 
-- 100% of required CodePath features are implemented and checked in the README.
+- 100% of P0 features are implemented and checked in the README.
 - The GIF walkthrough contains no blocking errors.
 - Post create, read, update, and delete operations all work.
 - Search and sorting can both be demonstrated.
@@ -828,7 +828,7 @@ The application should include:
 
 ### Optional Success Indicators
 
-- Authentication is completed without breaking required flows.
+- A second test account verifies guest/member behavior and author-only controls in the normal UI flow.
 - The application is deployed successfully.
 - At least one person other than the developer tests the application.
 - The layout remains usable on a mobile-sized screen.
@@ -839,12 +839,8 @@ The application should include:
 
 The following decisions do not block the approved product scope:
 
-1. What is the final product name?
-2. What visual style and color scheme will be used?
-3. After creating a post, should the app redirect to the new post or the home feed?
-4. Should search update while typing or after form submission?
-5. Should editing use a dedicated route or an inline form?
-6. Will authentication be completed for the submitted version?
-7. Will the application be deployed after the README and GIF are complete?
+1. What visual style and color scheme will be used?
+2. Will P1 profile editing be included in the initial release?
+3. Will the application be deployed after the README and GIF are complete?
 
-These questions should be resolved during user-flow, technical-design, or implementation planning.
+The redirect behavior, live title search, dedicated edit route, and basic authentication are already defined in the Technical Design.

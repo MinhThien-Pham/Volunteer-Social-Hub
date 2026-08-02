@@ -184,7 +184,7 @@ Create the persistent data foundation before building feature pages.
 9. Do not enable Realtime unless later required.
 10. Create `.env` or `.env.local` with:
     - `VITE_SUPABASE_URL`
-    - `VITE_SUPABASE_KEY`
+    - `VITE_SUPABASE_PUBLISHABLE_KEY`
 11. Add `.env.example` with variable names only.
 12. Confirm the real environment file is ignored by Git.
 13. Create `src/client.js`.

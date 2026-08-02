@@ -121,7 +121,7 @@ function App() {
           path="posts/new"
           element={
             <RequireAuth session={session}>
-              <CreatePost />
+              <CreatePost session={session} />
             </RequireAuth>
           }
         />

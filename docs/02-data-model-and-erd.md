@@ -21,6 +21,8 @@ The initial schema includes three application entities:
 
 Authentication credentials are not stored in application tables. The authentication provider manages login email, password, and session data.
 
+For the CodePath MVP, Supabase Row Level Security (RLS) is disabled to keep CRUD implementation aligned with the Unit 7 lab. The schema still stores `author_id` on posts and comments so the React application can provide the intended guest/member/author experience and so database authorization can be added later without redesigning ownership relationships.
+
 The design intentionally does not include separate entities for:
 
 - Upvotes
@@ -121,7 +123,7 @@ When a post is edited:
 
 ### Ownership
 
-Only the post author should be allowed to edit or delete the post once authorization is implemented.
+In the normal application flow, only the post author should be allowed to edit or delete the post. For the CodePath MVP, this check is performed in React because Supabase Row Level Security (RLS) is disabled.
 
 ---
 
@@ -323,6 +325,14 @@ Sign up with email and password
 
 Google sign-in remains an optional future enhancement.
 
+The CodePath MVP uses authentication plus frontend checks:
+
+- Guests are prompted to sign in before normal write actions.
+- Posts and comments are associated with authenticated profile IDs.
+- Edit and delete controls are shown only to the matching author in the React UI.
+
+Because RLS is disabled, these rules are not strongly enforced by the database against someone who bypasses the application interface. The MVP must use sample/demo content only. RLS and database authorization policies are required before using real private or organizational data.
+
 ---
 
 ## 10. Privacy-Sensitive Data
@@ -458,3 +468,5 @@ These should be added only when the corresponding feature is approved for implem
 10. Google sign-in remains optional.
 11. Upvotes use one integer count and do not require a separate table.
 12. The login email remains private.
+13. RLS is disabled for the CodePath MVP to match the simple Unit 7 CRUD approach.
+14. Frontend login and ownership checks define the normal demo flow, but database-level authorization is deferred until post-submission hardening.

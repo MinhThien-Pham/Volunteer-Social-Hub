@@ -54,7 +54,7 @@ Volunteer Social Hub addresses this need through persistent posts, individual di
 
 A guest is a visitor who is not signed in.
 
-When authentication is implemented, a guest can:
+A guest can:
 
 - View the home feed
 - Search posts by title
@@ -90,7 +90,7 @@ A registered member can:
 
 A post author is a registered member who created a post.
 
-When authentication and ownership are implemented, only the post author can edit or delete that post.
+In the normal application flow, only the post author can edit or delete that post. For the CodePath MVP, this ownership check is enforced by the React UI rather than Supabase Row Level Security (RLS).
 
 ### 3.4 Coursework Demo User
 
@@ -139,7 +139,7 @@ Users should be able to:
 6. Participate in discussions through comments.
 7. Create, update, and delete posts.
 8. Continue using the application after refreshing the browser without losing stored data.
-9. Identify content authors when authentication is implemented.
+9. Identify content authors through their registered accounts and display names.
 
 ---
 
@@ -179,8 +179,7 @@ The core post model includes only:
 
 The MVP should not prevent future additions such as:
 
-- Authentication
-- Profiles
+- Full profile pages
 - Tags
 - Google sign-in
 - Private organization membership
@@ -258,7 +257,7 @@ After all P0 features are complete:
 1. Profile editing for display name
 2. Avatar editing
 3. Bio editing
-4. Improved authorization policies
+4. Enable Row Level Security (RLS) and database-level authorization policies
 5. Mobile responsiveness improvements
 
 ### 8.3 P2 — Stretch Features
@@ -405,8 +404,6 @@ The CodePath project must not be presented as an official or approved U.S. Hunge
 
 ### 11.8 Guest Attempts an Interaction
 
-When authentication is implemented:
-
 1. A guest opens a post.
 2. The guest clicks the upward arrow, comment button, or create-post control.
 3. The application displays a sign-in prompt.
@@ -527,20 +524,17 @@ The required search behavior applies to post titles only.
 ### BR-09 — Edit and Delete
 
 - Edit and delete actions originate from the individual post page.
-- When authentication is implemented, only the author may edit or delete a post.
-- If authentication is not completed, the required edit and delete functionality must still be testable.
+- In the normal application flow, only the author may edit or delete a post.
+- For the CodePath MVP, the author check is performed in React because RLS is disabled.
+- Database-level ownership enforcement is future security hardening.
 
 ### BR-10 — Login Email
-
-When authentication is implemented:
 
 - Email is used only as a sign-in credential.
 - Login email is not displayed publicly.
 - Email confirmation is not required for the CodePath demo.
 
 ### BR-11 — Guest Controls
-
-When authentication is implemented:
 
 - Guests see the same interaction controls as members.
 - A protected action by a guest must not change data.
@@ -621,7 +615,7 @@ The application must handle:
 
 ### FR-16 — Authentication Extension
 
-When implemented, the system must support:
+The system must support:
 
 - Email/password registration and sign-in
 - Persistent session handling
@@ -704,12 +698,14 @@ The React code should be divided into reasonable pages and reusable components w
 - Login email must not be rendered publicly.
 - The client must not store raw passwords.
 - Protected actions must check for a valid session.
-- Ownership should not rely only on hiding buttons in the UI.
+- For the CodePath MVP, ownership checks are implemented in the React UI; database-level enforcement is deferred until RLS is enabled.
 - Environment configuration and credentials must not be committed to the repository.
 
 ### Coursework Limitation
 
-If simplified database permissions are used to meet the deadline, the project must not be described as production-secure.
+Supabase Row Level Security (RLS) is disabled for the CodePath MVP to keep the CRUD implementation aligned with the Unit 7 lab. Authentication and frontend ownership checks still guide the normal user flow, but the database does not prevent a technically knowledgeable person from bypassing the React UI and calling the public Supabase API directly.
+
+The MVP must use sample/demo content only, must not contain private U.S. Hunger data, and must not be described as production-secure. RLS and database authorization policies are required before any real organizational deployment.
 
 ---
 
@@ -778,13 +774,11 @@ If simplified database permissions are used to meet the deadline, the project mu
 
 ### AC-10 — Authentication Extension
 
-When authentication is implemented:
-
 - Guests can read all visible content.
 - Guests receive a sign-in prompt when attempting a write action.
 - Signed-in members can complete write actions.
 - Login email remains hidden.
-- Ownership-based edit and delete behavior works.
+- Ownership-based edit and delete behavior works in the normal React UI flow.
 
 ---
 
@@ -808,6 +802,7 @@ The core MVP is complete when:
 14. Git history contains meaningful milestone commits.
 15. The application runs locally.
 16. Deployment is completed only if time remains after the submission requirements are satisfied.
+17. Basic signup, sign-in, sign-out, guest restrictions, and author display work without breaking the required CodePath flows.
 
 ---
 

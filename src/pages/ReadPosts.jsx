@@ -59,30 +59,32 @@ const ReadPosts = () => {
   );
 
   return (
-    <section>
+    <section className="feed-page">
       <h1>Community Posts</h1>
 
-      <div>
-        <label htmlFor="post-search">Search Posts</label>
-        <input
-          id="post-search"
-          type="search"
-          value={searchInput}
-          onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Search by title"
-        />
-      </div>
+      <div className="feed-toolbar">
+        <div>
+          <label htmlFor="post-search">Search Posts</label>
+          <input
+            id="post-search"
+            type="search"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder="Search by title"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="post-sort">Sort Posts</label>
-        <select
-          id="post-sort"
-          value={sortOption}
-          onChange={(event) => setSortOption(event.target.value)}
-        >
-          <option value="newest">Newest</option>
-          <option value="supported">Most Supported</option>
-        </select>
+        <div>
+          <label htmlFor="post-sort">Sort Posts</label>
+          <select
+            id="post-sort"
+            value={sortOption}
+            onChange={(event) => setSortOption(event.target.value)}
+          >
+            <option value="newest">Newest</option>
+            <option value="supported">Most Supported</option>
+          </select>
+        </div>
       </div>
 
       {isLoading && <p>Loading posts...</p>}
@@ -98,11 +100,13 @@ const ReadPosts = () => {
         posts.length > 0 &&
         filteredPosts.length === 0 && <p>No posts match your search.</p>}
 
-      {!isLoading &&
-        !message &&
-        filteredPosts.map((post) => (
-          <Card key={post.id} post={post} />
-        ))}
+      <div className="post-list">
+        {!isLoading &&
+          !message &&
+          filteredPosts.map((post) => (
+            <Card key={post.id} post={post} />
+          ))}
+      </div>
     </section>
   );
 };

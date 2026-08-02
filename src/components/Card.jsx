@@ -2,14 +2,16 @@ import { Link } from "react-router";
 
 const Card = ({ post }) => {
   return (
-    <article>
-      <p>{new Date(post.created_at).toLocaleString()}</p>
+    <article className="post-card">
+      <p className="post-card-time">
+        {new Date(post.created_at).toLocaleString()}
+      </p>
 
-      <h2>
+      <h2 className="post-card-title">
         <Link to={`/posts/${post.id}`}>{post.title}</Link>
       </h2>
 
-      <p>↑ {post.upvotes}</p>
+      <p className="post-card-votes">↑ {post.upvotes}</p>
     </article>
   );
 };

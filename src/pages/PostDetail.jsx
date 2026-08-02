@@ -241,41 +241,52 @@ const PostDetail = ({ session }) => {
   const authorName = author?.display_name ?? "Unknown member";
 
   return (
-    <section>
+    <section className="post-detail">
       {message && <p role="alert">{message}</p>}
 
       {author?.avatar_url && (
         <img
+          className="avatar-image"
           src={author.avatar_url}
           alt={`${authorName} avatar`}
           onError={handleBrokenImage}
         />
       )}
 
-      <p>By {authorName}</p>
-      <p>{new Date(post.created_at).toLocaleString()}</p>
-
+      <p className="post-author">By {authorName}</p>
+      <p className="post-time">
+        {new Date(post.created_at).toLocaleString()}
+      </p>
+      
       <h1>{post.title}</h1>
 
-      {post.content && <p>{post.content}</p>}
+      {post.content && <p className="post-content">{post.content}</p>}
 
       {post.image_url && (
         <img
+          className="post-image"
           src={post.image_url}
           alt={`Attachment for ${post.title}`}
           onError={handleBrokenImage}
         />
       )}
 
-      <button type="button" onClick={handleUpvote} disabled={isUpvoting} aria-label="Add one upward-arrow vote">
+      <button
+        className="vote-button"
+        type="button"
+        onClick={handleUpvote}
+        disabled={isUpvoting}
+        aria-label="Add one upward-arrow vote"
+      >
         ↑ {post.upvotes}
       </button>
 
       {isOwner && (
-        <div>
+        <div className="post-actions">
           <Link to={`/posts/${post.id}/edit`}>Edit Post</Link>
 
           <button
+            className="danger-button"
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
@@ -284,7 +295,7 @@ const PostDetail = ({ session }) => {
           </button>
         </div>
       )}
-      <section>
+      <section className="comments-section">
         <h2>Comments</h2>
 
         <form onSubmit={handleCommentSubmit}>
@@ -307,14 +318,16 @@ const PostDetail = ({ session }) => {
           <p>No comments yet.</p>
         ) : (
           comments.map((comment) => (
-            <article key={comment.id}>
-              <p>
+            <article className="comment-card" key={comment.id}>
+              <p className="comment-author">
                 {comment.author?.display_name ?? "Unknown member"}
               </p>
 
-              <p>{new Date(comment.created_at).toLocaleString()}</p>
+              <p className="comment-time">
+                {new Date(comment.created_at).toLocaleString()}
+              </p>
 
-              <p>{comment.content}</p>
+              <p className="comment-content">{comment.content}</p>
             </article>
           ))
         )}

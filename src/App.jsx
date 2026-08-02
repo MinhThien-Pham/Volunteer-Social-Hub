@@ -126,13 +126,13 @@ function App() {
           }
         />
 
-        <Route path="posts/:id" element={<PostDetail />} />
+        <Route path="posts/:id" element={<PostDetail session={session} />} />
 
         <Route
           path="posts/:id/edit"
           element={
             <RequireAuth session={session}>
-              <EditPost />
+              <EditPost session={session} />
             </RequireAuth>
           }
         />

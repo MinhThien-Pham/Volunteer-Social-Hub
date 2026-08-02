@@ -1,6 +1,11 @@
 import { Link, Outlet } from "react-router";
 
-const Layout = () => {
+function Layout({ session, currentProfile, onLogout }) {
+  const displayName =
+    currentProfile?.display_name ||
+    session?.user?.user_metadata?.display_name ||
+    session?.user?.email;
+
   return (
     <div className="app">
       <header className="site-header">
@@ -11,8 +16,21 @@ const Layout = () => {
         <nav className="site-nav" aria-label="Main navigation">
           <Link to="/">Home</Link>
           <Link to="/posts/new">Create Post</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
+
+          {session ? (
+            <>
+              <span>{displayName}</span>
+
+              <button type="button" onClick={onLogout}>
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/signup">Sign Up</Link>
+            </>
+          )}
         </nav>
       </header>
 

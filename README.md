@@ -2,33 +2,33 @@
 
 Submitted by: **Minh Thien Pham**
 
-This web app: **insert description**
+This web app: **A responsive volunteer community forum where members can share opportunities and experiences, ask questions, publish categorized posts with multiple images, support posts, comment, and connect through public profiles.**
 
-Time spent: **X** hours spent in total
+Time spent: **20** hours spent in total
 
 ## Required Features
 
 The following **required** functionality is completed:
 
 
-- [ ] **Web app includes a create form that allows the user to create posts**
+- [X] **Web app includes a create form that allows the user to create posts**
   - Form requires users to add a post title
   - Forms should have the *option* for users to add: 
     - additional textual content
     - an image added as an external image URL
-- [ ] **Web app includes a home feed displaying previously created posts**
+- [X] **Web app includes a home feed displaying previously created posts**
   - Web app must include home feed displaying previously created posts
   - By default, each post on the posts feed should show only the post's:
     - creation time
     - title 
     - upvotes count
   - Clicking on a post should direct the user to a new page for the selected post
-- [ ] **Users can view posts in different ways**
+- [X] **Users can view posts in different ways**
   - Users can sort posts by either:
     -  creation time
     -  upvotes count
   - Users can search for posts by title
-- [ ] **Users can interact with each post in different ways**
+- [X] **Users can interact with each post in different ways**
   - The app includes a separate post page for each created post when clicked, where any additional information is shown, including:
     - content
     - image
@@ -38,7 +38,7 @@ The following **required** functionality is completed:
     - Each click increases the post's upvotes count by one
     - Users can upvote any post any number of times
 
-- [ ] **A post that a user previously created can be edited or deleted from its post pages**
+- [X] **A post that a user previously created can be edited or deleted from its post pages**
   - After a user creates a new post, they can go back and edit the post
   - A previously created post can be deleted from its post page
 
@@ -52,7 +52,7 @@ The following **optional** features are implemented:
 - [ ] Users can repost a previous post by referencing its post ID. On the post page of the new post
   - Users can repost a previous post by referencing its post ID
   - On the post page of the new post, the referenced post is displayed and linked, creating a thread
-- [ ] Users can customize the interface
+- [X] Users can customize the interface
   - e.g., selecting the color scheme or showing the content and image of each post on the home feed
 - [ ] Users can add more characterics to their posts
   - Users can share and view web videos
@@ -63,13 +63,26 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you added to improve the site's functionality!
+* [X] Supabase email/password authentication
+* [X] Public member profiles
+* [X] Editable display name, bio, and avatar
+* [X] Local avatar uploads
+* [X] Up to six images per post
+* [X] Image previews before submission
+* [X] Multi-image carousel with arrows and position dots
+* [X] Post categories and category filtering
+* [X] Edit and delete own comments
+* [X] Global title search
+* [X] Responsive desktop and mobile feed
+* [X] Author links and avatar dropdown navigation
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='./walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+Backup: https://imgur.com/a/udIuvKC
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with ...  
@@ -77,7 +90,22 @@ GIF created with ...
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+### Challenges
+
+- Integrating Supabase Auth, PostgreSQL, and Storage into one React application
+- Supporting both local image uploads and external image URLs
+- Preserving the order of multiple post images
+- Building a reusable carousel without a third-party carousel package
+- Keeping profile and avatar data synchronized after updates
+- Managing post and comment ownership controls in the interface
+- Redesigning the original layout into a responsive social feed
+
+### Current Limitations
+
+- Row Level Security is disabled for this demo project.
+- The project should use RLS and database-enforced ownership policies before handling private or sensitive production data.
+- Upvotes are intentionally unlimited and are not tracked per user.
+- External image URLs may stop working if the external host removes the image.
 
 ## License
 

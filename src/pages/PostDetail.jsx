@@ -14,6 +14,7 @@ const PostDetail = ({ session }) => {
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState("");
+  const [commentMessage, setCommentMessage] = useState("");
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
@@ -43,6 +44,7 @@ const PostDetail = ({ session }) => {
 
       if (!postData) {
         setIsLoading(false);
+        setMessage("Post not found.");
         return;
       }
 
@@ -139,18 +141,18 @@ const PostDetail = ({ session }) => {
     event.preventDefault();
 
     if (!session) {
-      setMessage("Please log in to add a comment.");
+      setCommentMessage("Please log in to add a comment.");
       return;
     }
 
     const trimmedContent = commentContent.trim();
 
     if (!trimmedContent) {
-      setMessage("Comment cannot be empty.");
+      setCommentMessage("Comment cannot be empty.");
       return;
     }
 
-    setMessage("");
+    setCommentMessage("");
     setIsCommentSubmitting(true);
 
     const { data, error } = await supabase
@@ -166,7 +168,7 @@ const PostDetail = ({ session }) => {
     setIsCommentSubmitting(false);
 
     if (error) {
-      setMessage(error.message);
+      setCommentMessage(error.message);
       return;
     }
 
@@ -184,6 +186,7 @@ const PostDetail = ({ session }) => {
     ]);
 
     setCommentContent("");
+    setCommentMessage("");
   };
 
   const startEditingComment = (comment) => {
@@ -440,6 +443,13 @@ const PostDetail = ({ session }) => {
           <button type="submit" disabled={isCommentSubmitting}>
             {isCommentSubmitting ? "Posting..." : "Post Comment"}
           </button>
+
+          {commentMessage && (
+            <p className="comment-message" role="alert">
+              {commentMessage}
+            </p>
+          )}
+
         </form>
 
         {comments.length === 0 ? (

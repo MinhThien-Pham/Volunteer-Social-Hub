@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Avatar = ({
   src,
   name,
   className = "",
 }) => {
-  const [imageFailed, setImageFailed] = useState(false);
-
-  useEffect(() => {
-    setImageFailed(false);
-  }, [src]);
+  const [failedSrc, setFailedSrc] = useState(null);
 
   const initial =
     name?.trim().charAt(0).toUpperCase() || "?";
@@ -21,13 +17,16 @@ const Avatar = ({
     .filter(Boolean)
     .join(" ");
 
-  if (src && !imageFailed) {
+  const shouldShowImage =
+    Boolean(src) && failedSrc !== src;
+
+  if (shouldShowImage) {
     return (
       <img
         className={combinedClassName}
         src={src}
         alt={`${name || "Member"} avatar`}
-        onError={() => setImageFailed(true)}
+        onError={() => setFailedSrc(src)}
       />
     );
   }

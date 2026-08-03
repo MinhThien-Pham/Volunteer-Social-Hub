@@ -752,6 +752,10 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.comment-message {
+  margin: 0;
+}
+
 .comment-card {
   margin-top: 0;
   padding: 1rem 0;

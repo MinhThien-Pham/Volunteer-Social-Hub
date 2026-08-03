@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../client.js";
 import PostImagesInput from "../components/PostImagesInput.jsx";
-import { resolvePostImageUrls } from "../utils/postImages.js";
+import { resolvePostImageUrls } from "../utils/mediaImages.js";
 
 const CreatePost = ({ session }) => {
   const navigate = useNavigate();

@@ -15,6 +15,10 @@ const PostDetail = ({ session }) => {
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState("");
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState("");
+  const [savingCommentId, setSavingCommentId] = useState(null);
+  const [deletingCommentId, setDeletingCommentId] = useState(null);
   const [isUpvoting, setIsUpvoting] = useState(false);
 
   useEffect(() => {
@@ -182,6 +186,124 @@ const PostDetail = ({ session }) => {
     setCommentContent("");
   };
 
+  const startEditingComment = (comment) => {
+    if (session?.user?.id !== comment.author_id) {
+      setMessage("You can only edit your own comment.");
+      return;
+    }
+
+    setMessage("");
+    setEditingCommentId(comment.id);
+    setEditingCommentContent(comment.content);
+  };
+
+  const cancelEditingComment = () => {
+    setEditingCommentId(null);
+    setEditingCommentContent("");
+  };
+
+  const handleCommentUpdate = async (event, comment) => {
+    event.preventDefault();
+
+    if (session?.user?.id !== comment.author_id) {
+      setMessage("You can only edit your own comment.");
+      return;
+    }
+
+    const trimmedContent = editingCommentContent.trim();
+
+    if (!trimmedContent) {
+      setMessage("Comment cannot be empty.");
+      return;
+    }
+
+    setMessage("");
+    setSavingCommentId(comment.id);
+
+    const { data, error } = await supabase
+      .from("comments")
+      .update({
+        content: trimmedContent,
+      })
+      .eq("id", comment.id)
+      .eq("author_id", session.user.id)
+      .select("id, content")
+      .maybeSingle();
+
+    setSavingCommentId(null);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    if (!data) {
+      setMessage("Comment could not be updated.");
+      return;
+    }
+
+    setComments((currentComments) =>
+      currentComments.map((currentComment) =>
+        currentComment.id === data.id
+          ? {
+              ...currentComment,
+              content: data.content,
+            }
+          : currentComment,
+      ),
+    );
+
+    cancelEditingComment();
+  };
+
+  const handleCommentDelete = async (comment) => {
+    if (session?.user?.id !== comment.author_id) {
+      setMessage("You can only delete your own comment.");
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this comment?",
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setMessage("");
+    setDeletingCommentId(comment.id);
+
+    const { data, error } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", comment.id)
+      .eq("author_id", session.user.id)
+      .select("id")
+      .maybeSingle();
+
+    setDeletingCommentId(null);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    if (!data) {
+      setMessage("Comment could not be deleted.");
+      return;
+    }
+
+    setComments((currentComments) =>
+      currentComments.filter(
+        (currentComment) => currentComment.id !== data.id,
+      ),
+    );
+
+    if (editingCommentId === comment.id) {
+      cancelEditingComment();
+    }
+  };
+
   const handleDelete = async () => {
     const isOwner = session?.user?.id === post.author_id;
 
@@ -320,21 +442,92 @@ const PostDetail = ({ session }) => {
         {comments.length === 0 ? (
           <p>No comments yet.</p>
         ) : (
-          comments.map((comment) => (
-            <article className="comment-card" key={comment.id}>
-              <p className="comment-author">
-                <Link to={`/profiles/${comment.author_id}`}>
-                  {comment.author?.display_name ?? "Unknown member"}
-                </Link>
-              </p>
+          comments.map((comment) => {
+            const isCommentOwner =
+              session?.user?.id === comment.author_id;
 
-              <p className="comment-time">
-                {new Date(comment.created_at).toLocaleString()}
-              </p>
+            const isEditing =
+              editingCommentId === comment.id;
 
-              <p className="comment-content">{comment.content}</p>
-            </article>
-          ))
+            const isSaving =
+              savingCommentId === comment.id;
+
+            const isDeleting =
+              deletingCommentId === comment.id;
+
+            return (
+              <article className="comment-card" key={comment.id}>
+                <p className="comment-author">
+                  <Link to={`/profiles/${comment.author_id}`}>
+                    {comment.author?.display_name ?? "Unknown member"}
+                  </Link>
+                </p>
+
+                <p className="comment-time">
+                  {new Date(comment.created_at).toLocaleString()}
+                </p>
+
+                {isEditing ? (
+                  <form
+                    className="comment-edit-form"
+                    onSubmit={(event) =>
+                      handleCommentUpdate(event, comment)
+                    }
+                  >
+                    <textarea
+                      value={editingCommentContent}
+                      onChange={(event) =>
+                        setEditingCommentContent(event.target.value)
+                      }
+                      aria-label="Edit comment"
+                      disabled={isSaving}
+                    />
+
+                    <div className="comment-edit-actions">
+                      <button type="submit" disabled={isSaving}>
+                        {isSaving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        className="comment-cancel-button"
+                        type="button"
+                        onClick={cancelEditingComment}
+                        disabled={isSaving}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <p className="comment-content">{comment.content}</p>
+
+                    {isCommentOwner && (
+                      <div className="comment-actions">
+                        <button
+                          className="comment-action-button"
+                          type="button"
+                          onClick={() => startEditingComment(comment)}
+                          disabled={isDeleting}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          className="comment-action-button comment-delete-button"
+                          type="button"
+                          onClick={() => handleCommentDelete(comment)}
+                          disabled={isDeleting}
+                        >
+                          {isDeleting ? "Deleting..." : "Delete"}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </article>
+            );
+          })
         )}
       </section>
     </section>

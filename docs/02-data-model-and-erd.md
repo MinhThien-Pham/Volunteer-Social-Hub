@@ -95,7 +95,6 @@ A post requires a title and may include text content and up to six ordered image
 | `author_id` | Yes | Foreign key referencing the author profile |
 | `title` | Yes | Post title |
 | `content` | No | Full text content |
-| `image_url` | No | Temporary compatibility field containing the first image URL |
 | `image_urls` | Yes | Ordered array of zero to six uploaded or external image URLs |
 | `upvotes` | Yes | Unlimited upward-arrow click count |
 | `created_at` | Yes | Post creation timestamp |
@@ -107,8 +106,6 @@ A post requires a title and may include text content and up to six ordered image
 - `content` may be null or empty.
 - `image_urls` defaults to an empty array.
 - `image_urls` may contain at most six entries.
-- `image_url` is null when the post has no images.
-- During the migration period, `image_url` mirrors the first entry in `image_urls`.
 - `upvotes` defaults to `0`.
 - `upvotes` cannot be negative.
 - `author_id` must reference an existing profile.
@@ -120,7 +117,7 @@ The MVP stores only the current version of a post.
 
 When a post is edited:
 
-- `title`, `content`, `image_urls`, and the compatibility `image_url` value may change.
+- `title`, `content`, and `image_urls` may change.
 - `updated_at` changes.
 - `created_at` remains unchanged.
 - Previous versions are not preserved.
@@ -293,8 +290,6 @@ Uploaded files are stored in the public `community-media` bucket under:
 <user-id>/posts/<unique-file-name>
 ```
 
-The legacy `posts.image_url` field remains temporarily for compatibility and mirrors the first item in `image_urls`.
-
 A separate image table is not required because the application does not currently store:
 
 - Per-image captions
@@ -431,7 +426,6 @@ erDiagram
         uuid author_id FK
         string title
         string content
-        string image_url
         string[] image_urls
         integer upvotes
         datetime created_at

@@ -209,7 +209,6 @@ id
 author_id
 title
 content
-image_url
 image_urls
 upvotes
 created_at
@@ -340,7 +339,7 @@ Complete the first vertical slice: a signed-in member creates a post and sees it
 ```text
 title
 content
-image_url
+image_urls
 ```
 
 2. Require and trim the title.
@@ -798,4 +797,3 @@ Security hardening should occur before using real users or private organizationa
 - Selected images can be previewed and removed.
 - Create and edit flows preserve image order.
 - The complete ordered list persists in `image_urls`.
-- The first image remains synchronized with the legacy `image_url` field.

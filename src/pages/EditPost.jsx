@@ -25,9 +25,7 @@ const EditPost = ({ session }) => {
     const fetchPost = async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select(
-          "author_id, title, content, image_url, image_urls",
-        )
+        .select("author_id, title, content, image_urls")
         .eq("id", id)
         .maybeSingle();
 
@@ -53,12 +51,7 @@ const EditPost = ({ session }) => {
         content: data.content ?? "",
       });
 
-      const storedImageUrls =
-        data.image_urls?.length > 0
-          ? data.image_urls
-          : data.image_url
-            ? [data.image_url]
-            : [];
+      const storedImageUrls = data.image_urls ?? [];
 
       setImages(
         storedImageUrls.map((url) => ({
@@ -115,8 +108,7 @@ const EditPost = ({ session }) => {
         .from("posts")
         .update({
           title: trimmedTitle,
-          content: post.content.trim() || null,
-          image_url: imageUrls[0] ?? null,
+          content: post.content.trim() || null,          
           image_urls: imageUrls,
         })
         .eq("id", id)

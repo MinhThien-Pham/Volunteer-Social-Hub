@@ -412,7 +412,7 @@ Path: <user-id>/posts/<unique-file-name>
 
 `src/utils/postImages.js` validates images, uploads local files, obtains public URLs, and resolves the final ordered URL array.
 
-The application stores the complete array in `posts.image_urls` and temporarily stores its first item in `posts.image_url` for compatibility.
+The application stores the complete ordered array in `posts.image_urls`.
 
 ---
 
@@ -508,7 +508,6 @@ await supabase.from("posts").insert({
   title: post.title.trim(),
   content: post.content.trim() || null,
   image_urls: imageUrls,
-  image_url: imageUrls[0] ?? null,
   author_id: session.user.id,
   upvotes: 0,
 });
@@ -542,7 +541,6 @@ await supabase
     title: post.title.trim(),
     content: post.content.trim() || null,
     image_urls: imageUrls,
-    image_url: imageUrls[0] ?? null,
   })
   .eq("id", id);
 ```

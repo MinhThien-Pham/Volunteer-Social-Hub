@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { supabase } from "../client.js";
+import ImageCarousel from "../components/ImageCarousel.jsx";
 
 const PostDetail = ({ session }) => {
   const { id } = useParams();
@@ -239,6 +240,7 @@ const PostDetail = ({ session }) => {
 
   const isOwner = session?.user?.id === post.author_id;
   const authorName = author?.display_name ?? "Unknown member";
+  const imageUrls = post.image_urls ?? [];
 
   return (
     <section className="post-detail">
@@ -267,10 +269,10 @@ const PostDetail = ({ session }) => {
 
       {post.content && <p className="post-content">{post.content}</p>}
 
-      {post.image_url && (
+      {imageUrls[0] && (
         <img
           className="post-image"
-          src={post.image_url}
+          src={imageUrls[0]}
           alt={`Attachment for ${post.title}`}
           onError={handleBrokenImage}
         />

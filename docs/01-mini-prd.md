@@ -567,7 +567,6 @@ The required search behavior applies to post titles only.
 - Images may come from local file uploads or direct external image URLs.
 - Uploaded images must be image files no larger than 5 MB.
 - Images may not exceed 4096 × 4096 pixels.
-- The first image is also stored in the temporary legacy `image_url` field for compatibility.
 - The complete ordered list is stored in `image_urls`.
 
 ---

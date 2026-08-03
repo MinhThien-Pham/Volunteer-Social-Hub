@@ -43,7 +43,19 @@ const Profile = ({ session }) => {
 
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select("id, title, category, upvotes, created_at")
+        .select(`
+          id,
+          author_id,
+          title,
+          content,
+          category,
+          image_urls,
+          upvotes,
+          created_at,
+          comments:comments!comments_post_id_fkey (
+            id
+          )
+        `)
         .eq("author_id", id)
         .order("created_at", { ascending: false });
 
@@ -130,7 +142,16 @@ const Profile = ({ session }) => {
         ) : (
           <div className="post-list">
             {posts.map((post) => (
-              <Card key={post.id} post={post} />
+              <Card
+                key={post.id}
+                post={{
+                  ...post,
+                  author: {
+                    display_name: profile.display_name,
+                    avatar_url: profile.avatar_url,
+                  },
+                }}
+              />
             ))}
           </div>
         )}

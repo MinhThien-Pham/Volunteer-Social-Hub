@@ -1,6 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
-const ImageCarousel = ({ imageUrls = [], title }) => {
+const ImageCarousel = ({
+  imageUrls = [],
+  title,
+  linkTo = null,
+  className = "",
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [failedIndexes, setFailedIndexes] = useState([]);
 
@@ -31,21 +37,38 @@ const ImageCarousel = ({ imageUrls = [], title }) => {
   };
 
   return (
-    <div className="image-carousel">
+    <div className={`image-carousel ${className}`.trim()}>
       <div className="image-carousel-stage">
         {currentImageFailed ? (
           <p className="image-carousel-error">
             This image could not be loaded.
           </p>
         ) : (
-          <img
-            className="image-carousel-image"
-            src={imageUrls[currentIndex]}
-            alt={`${title} — image ${currentIndex + 1} of ${
-              imageUrls.length
-            }`}
-            onError={handleImageError}
-          />
+          linkTo ? (
+            <Link
+              className="carousel-image-link"
+              to={linkTo}
+              aria-label={`Open ${title}`}
+            >
+              <img
+                className="image-carousel-image"
+                src={imageUrls[currentIndex]}
+                alt={`${title} — image ${currentIndex + 1} of ${
+                  imageUrls.length
+                }`}
+                onError={handleImageError}
+              />
+            </Link>
+          ) : (
+            <img
+              className="image-carousel-image"
+              src={imageUrls[currentIndex]}
+              alt={`${title} — image ${currentIndex + 1} of ${
+                imageUrls.length
+              }`}
+              onError={handleImageError}
+            />
+          )
         )}
 
         {hasPrevious && (

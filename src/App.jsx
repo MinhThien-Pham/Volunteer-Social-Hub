@@ -18,7 +18,7 @@ function App() {
   const [session, setSession] = useState(null);
   const [currentProfile, setCurrentProfile] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-
+  const [searchInput, setSearchInput] = useState("");
   const userId = session?.user?.id;
 
   useEffect(() => {
@@ -114,10 +114,15 @@ function App() {
             session={session}
             currentProfile={currentProfile}
             onLogout={handleLogout}
+            searchInput={searchInput}
+            onSearchChange={setSearchInput}
           />
         }
       >
-        <Route index element={<ReadPosts />} />
+        <Route
+          index
+          element={<ReadPosts searchInput={searchInput} />}
+        />
 
         <Route
           path="posts/new"

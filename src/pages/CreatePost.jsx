@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../client.js";
 import PostImagesInput from "../components/PostImagesInput.jsx";
 import { resolvePostImageUrls } from "../utils/mediaImages.js";
+import { DEFAULT_POST_CATEGORY, POST_CATEGORIES } from "../constants/postCategories.js";
 
 const CreatePost = ({ session }) => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const CreatePost = ({ session }) => {
   const [post, setPost] = useState({
     title: "",
     content: "",
+    category: DEFAULT_POST_CATEGORY,
   });
 
   const [images, setImages] = useState([]);
@@ -52,7 +54,8 @@ const CreatePost = ({ session }) => {
       const { error } = await supabase.from("posts").insert({
         author_id: session.user.id,
         title: trimmedTitle,
-        content: post.content.trim() || null,        
+        content: post.content.trim() || null, 
+        category: post.category,       
         image_urls: imageUrls,
         upvotes: 0,
       });
@@ -96,6 +99,23 @@ const CreatePost = ({ session }) => {
             value={post.content}
             onChange={handleChange}
           />
+        </div>
+
+        <div>
+          <label htmlFor="post-category">Category</label>
+
+          <select
+            id="post-category"
+            name="category"
+            value={post.category}
+            onChange={handleChange}
+          >
+            {POST_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <PostImagesInput

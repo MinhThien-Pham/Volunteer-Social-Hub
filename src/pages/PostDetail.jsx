@@ -386,6 +386,9 @@ const PostDetail = ({ session }) => {
       <p className="post-time">
         {new Date(post.created_at).toLocaleString()}
       </p>
+      <p className="post-detail-category">
+        {post.category}
+      </p>
 
       <h1>{post.title}</h1>
 

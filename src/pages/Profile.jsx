@@ -43,7 +43,7 @@ const Profile = ({ session }) => {
 
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
-        .select("id, title, upvotes, created_at")
+        .select("id, title, category, upvotes, created_at")
         .eq("author_id", id)
         .order("created_at", { ascending: false });
 

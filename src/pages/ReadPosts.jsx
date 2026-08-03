@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../client.js";
 import Card from "../components/Card.jsx";
+import { POST_CATEGORIES } from "../constants/postCategories.js";
 
 const ReadPosts = () => {
   const [posts, setPosts] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [sortOption, setSortOption] = useState("newest");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -18,7 +20,7 @@ const ReadPosts = () => {
 
       let query = supabase
         .from("posts")
-        .select("id, title, upvotes, created_at");
+        .select("id, title, category, upvotes, created_at");
 
       if (sortOption === "supported") {
         query = query
@@ -54,9 +56,17 @@ const ReadPosts = () => {
 
   const normalizedSearch = searchInput.trim().toLowerCase();
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(normalizedSearch),
-  );
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = post.title
+      .toLowerCase()
+      .includes(normalizedSearch);
+
+    const matchesCategory =
+      categoryFilter === "All" ||
+      post.category === categoryFilter;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <section className="feed-page">
@@ -72,6 +82,26 @@ const ReadPosts = () => {
             onChange={(event) => setSearchInput(event.target.value)}
             placeholder="Search by title"
           />
+        </div>
+
+        <div>
+          <label htmlFor="post-category-filter">Category</label>
+
+          <select
+            id="post-category-filter"
+            value={categoryFilter}
+            onChange={(event) =>
+              setCategoryFilter(event.target.value)
+            }
+          >
+            <option value="All">All Categories</option>
+
+            {POST_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -98,7 +128,7 @@ const ReadPosts = () => {
       {!isLoading &&
         !message &&
         posts.length > 0 &&
-        filteredPosts.length === 0 && <p>No posts match your search.</p>}
+        filteredPosts.length === 0 && <p>No posts match your current filters.</p>}
 
       <div className="post-list">
         {!isLoading &&

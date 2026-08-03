@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { supabase } from "../client.js";
 import PostImagesInput from "../components/PostImagesInput.jsx";
 import { resolvePostImageUrls } from "../utils/mediaImages.js";
+import { DEFAULT_POST_CATEGORY, POST_CATEGORIES } from "../constants/postCategories.js";
 
 const EditPost = ({ session }) => {
   const { id } = useParams();
@@ -11,6 +12,7 @@ const EditPost = ({ session }) => {
   const [post, setPost] = useState({
     title: "",
     content: "",
+    category: DEFAULT_POST_CATEGORY,
   });
 
   const [images, setImages] = useState([]);
@@ -25,7 +27,7 @@ const EditPost = ({ session }) => {
     const fetchPost = async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("author_id, title, content, image_urls")
+        .select("author_id, title, content, category, image_urls")
         .eq("id", id)
         .maybeSingle();
 
@@ -49,6 +51,7 @@ const EditPost = ({ session }) => {
       setPost({
         title: data.title,
         content: data.content ?? "",
+        category: data.category ?? DEFAULT_POST_CATEGORY,
       });
 
       const storedImageUrls = data.image_urls ?? [];
@@ -108,7 +111,8 @@ const EditPost = ({ session }) => {
         .from("posts")
         .update({
           title: trimmedTitle,
-          content: post.content.trim() || null,          
+          content: post.content.trim() || null,     
+          category: post.category,     
           image_urls: imageUrls,
         })
         .eq("id", id)
@@ -190,6 +194,23 @@ const EditPost = ({ session }) => {
             value={post.content}
             onChange={handleChange}
           />
+        </div>
+
+        <div>
+          <label htmlFor="edit-post-category">Category</label>
+
+          <select
+            id="edit-post-category"
+            name="category"
+            value={post.category}
+            onChange={handleChange}
+          >
+            {POST_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <PostImagesInput

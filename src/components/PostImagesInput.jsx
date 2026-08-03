@@ -3,7 +3,7 @@ import {
   MAX_POST_IMAGES,
   validateImageUrl,
   validateLocalImage,
-} from "../utils/postImages.js";
+} from "../utils/mediaImages.js";
 
 const PostImagesInput = ({
   idPrefix,

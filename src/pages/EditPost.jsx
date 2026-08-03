@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { supabase } from "../client.js";
 import PostImagesInput from "../components/PostImagesInput.jsx";
-import { resolvePostImageUrls } from "../utils/postImages.js";
+import { resolvePostImageUrls } from "../utils/mediaImages.js";
 
 const EditPost = ({ session }) => {
   const { id } = useParams();

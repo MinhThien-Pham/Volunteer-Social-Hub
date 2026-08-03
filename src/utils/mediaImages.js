@@ -112,20 +112,17 @@ const getFileExtension = (file) => {
     return null;
 };
 
-export const uploadPostImage = async (file, userId) => {
-    const extension = getFileExtension(file);
-    const uniqueName = extension
-        ? `${crypto.randomUUID()}.${extension}`
-        : crypto.randomUUID();
-
-    const filePath = `${userId}/posts/${uniqueName}`;
-
+const uploadImage = async ({
+    file,
+    filePath,
+    upsert = false,
+}) => {
     const { error: uploadError } = await supabase.storage
         .from(MEDIA_BUCKET)
         .upload(filePath, file, {
             cacheControl: "3600",
             contentType: file.type,
-            upsert: false,
+            upsert,
         });
 
     if (uploadError) {
@@ -141,6 +138,29 @@ export const uploadPostImage = async (file, userId) => {
     }
 
     return data.publicUrl;
+};
+
+export const uploadPostImage = async (file, userId) => {
+    const extension = getFileExtension(file);
+
+    const uniqueName = extension
+        ? `${crypto.randomUUID()}.${extension}`
+        : crypto.randomUUID();
+
+    return uploadImage({
+        file,
+        filePath: `${userId}/posts/${uniqueName}`,
+    });
+};
+
+export const uploadAvatarImage = async (file, userId) => {
+    const publicUrl = await uploadImage({
+        file,
+        filePath: `${userId}/avatars/avatar`,
+        upsert: true,
+    });
+
+    return `${publicUrl}?v=${Date.now()}`;
 };
 
 export const resolvePostImageUrls = async (images, userId) => {

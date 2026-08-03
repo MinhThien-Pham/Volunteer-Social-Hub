@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { supabase } from "../client.js";
+import PostImagesInput from "../components/PostImagesInput.jsx";
+import { resolvePostImageUrls } from "../utils/postImages.js";
 
 const EditPost = ({ session }) => {
   const { id } = useParams();
@@ -9,9 +11,9 @@ const EditPost = ({ session }) => {
   const [post, setPost] = useState({
     title: "",
     content: "",
-    image_url: "",
   });
 
+  const [images, setImages] = useState([]);
   const [authorId, setAuthorId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +25,9 @@ const EditPost = ({ session }) => {
     const fetchPost = async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("author_id, title, content, image_url")
+        .select(
+          "author_id, title, content, image_url, image_urls",
+        )
         .eq("id", id)
         .maybeSingle();
 
@@ -47,8 +51,22 @@ const EditPost = ({ session }) => {
       setPost({
         title: data.title,
         content: data.content ?? "",
-        image_url: data.image_url ?? "",
       });
+
+      const storedImageUrls =
+        data.image_urls?.length > 0
+          ? data.image_urls
+          : data.image_url
+            ? [data.image_url]
+            : [];
+
+      setImages(
+        storedImageUrls.map((url) => ({
+          id: crypto.randomUUID(),
+          kind: "url",
+          url,
+        })),
+      );
 
       setIsLoading(false);
     };
@@ -87,31 +105,39 @@ const EditPost = ({ session }) => {
     setMessage("");
     setIsSubmitting(true);
 
-    const { data, error } = await supabase
-      .from("posts")
-      .update({
-        title: trimmedTitle,
-        content: post.content.trim() || null,
-        image_url: post.image_url.trim() || null,
-      })
-      .eq("id", id)
-      .eq("author_id", session.user.id)
-      .select("id")
-      .maybeSingle();
+    try {
+      const imageUrls = await resolvePostImageUrls(
+        images,
+        session.user.id,
+      );
 
-    setIsSubmitting(false);
+      const { data, error } = await supabase
+        .from("posts")
+        .update({
+          title: trimmedTitle,
+          content: post.content.trim() || null,
+          image_url: imageUrls[0] ?? null,
+          image_urls: imageUrls,
+        })
+        .eq("id", id)
+        .eq("author_id", session.user.id)
+        .select("id")
+        .maybeSingle();
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error("Post could not be updated.");
+      }
+
+      navigate(`/posts/${id}`);
+    } catch (error) {
       setMessage(error.message);
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (!data) {
-      setMessage("Post could not be updated.");
-      return;
-    }
-
-    navigate(`/posts/${id}`);
   };
 
   if (isLoading) {
@@ -152,6 +178,7 @@ const EditPost = ({ session }) => {
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="edit-post-title">Title</label>
+
           <input
             id="edit-post-title"
             name="title"
@@ -164,6 +191,7 @@ const EditPost = ({ session }) => {
 
         <div>
           <label htmlFor="edit-post-content">Content</label>
+
           <textarea
             id="edit-post-content"
             name="content"
@@ -172,16 +200,13 @@ const EditPost = ({ session }) => {
           />
         </div>
 
-        <div>
-          <label htmlFor="edit-post-image-url">Image URL</label>
-          <input
-            id="edit-post-image-url"
-            name="image_url"
-            type="url"
-            value={post.image_url}
-            onChange={handleChange}
-          />
-        </div>
+        <PostImagesInput
+          idPrefix="edit-post"
+          images={images}
+          onImagesChange={setImages}
+          onMessage={setMessage}
+          disabled={isSubmitting}
+        />
 
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : "Save Changes"}

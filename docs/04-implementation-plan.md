@@ -210,6 +210,7 @@ author_id
 title
 content
 image_url
+image_urls
 upvotes
 created_at
 ```
@@ -567,7 +568,7 @@ Prepare:
 
 - 4–6 posts
 - At least 2 posts with content
-- At least 2 posts with external images
+- At least 2 posts with uploaded or external images
 - At least 3 comments
 - Different upward-arrow counts
 - At least 2 accounts when practical
@@ -764,13 +765,17 @@ Do not start stretch features during the final hour.
 Only after the Definition of Done is satisfied:
 
 1. Profile page, display name, avatar, and bio editing
-2. Edit/delete own comments
-3. Post categories and filtering
-4. Dark theme
-5. Netlify deployment
-6. RLS and ownership policies
-7. Safer atomic upvote handling
-8. Google sign-in
+2. Multiple post-image uploads and external image URLs
+3. Post image carousel
+4. Local avatar uploads
+5. Edit/delete own comments
+6. Post categories and filtering
+7. Social-feed and navigation redesign
+8. Dark theme
+9. Netlify deployment
+10. RLS and ownership policies
+11. Safer atomic upvote handling
+12. Google sign-in
 
 Security hardening should occur before using real users or private organizational data.
 
@@ -782,3 +787,15 @@ Security hardening should occur before using real users or private organizationa
 - Display name updates in the navigation.
 - Post and comment author names link to profiles.
 - Avatar and bio persist after refresh.
+
+### Multi-Image Stretch Completion Gate
+
+- A post may contain zero to six images.
+- Member may upload multiple images from their device.
+- Member may add multiple direct external image URLs.
+- Uploaded and external images may be combined.
+- Invalid type, file size, resolution, and image count are rejected.
+- Selected images can be previewed and removed.
+- Create and edit flows preserve image order.
+- The complete ordered list persists in `image_urls`.
+- The first image remains synchronized with the legacy `image_url` field.

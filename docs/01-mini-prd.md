@@ -205,8 +205,6 @@ The following features are not part of the core MVP:
 - Social links
 - Google sign-in
 - Organization-specific email-domain restrictions
-- Direct image uploads
-- Multiple-image galleries
 - Admin dashboards
 - Moderation workflows
 - Public/internal visibility controls
@@ -283,6 +281,20 @@ The implemented profile stretch includes:
 5. Author profile pages showing that member's posts
 6. Profile links from the navigation, posts, and comments
 
+### 8.5 Selected Media Stretch Scope
+
+The implemented post-media stretch includes:
+
+1. Up to six ordered images per post
+2. Multiple image uploads from the user's device
+3. Multiple direct external image URLs
+4. A combination of uploaded images and external image URLs
+5. Image previews before submitting
+6. Removal of selected images before submitting
+7. Editing the image list of an existing post
+8. A 5 MB file-size limit per uploaded image
+9. A maximum resolution of 4096 × 4096 pixels
+
 ---
 
 ## 9. Future Scope
@@ -296,7 +308,6 @@ Possible future additions include:
 - Saved or bookmarked posts
 - Reposting
 - Tag filtering
-- Multiple images
 - Content reporting
 - Deleting one's own comments
 - Improved mobile responsiveness
@@ -552,7 +563,12 @@ The required search behavior applies to post titles only.
 
 ### BR-12 — Images
 
-The MVP stores only external image URLs. It does not upload image files.
+- A post may contain zero to six ordered images.
+- Images may come from local file uploads or direct external image URLs.
+- Uploaded images must be image files no larger than 5 MB.
+- Images may not exceed 4096 × 4096 pixels.
+- The first image is also stored in the temporary legacy `image_url` field for compatibility.
+- The complete ordered list is stored in `image_urls`.
 
 ---
 
@@ -699,7 +715,7 @@ The React code should be divided into reasonable pages and reusable components w
 - Do not collect home addresses.
 - Do not collect residential-area information.
 - Do not require personal profile details to use the core forum.
-- Users provide external image URLs at their own discretion.
+- Users may provide external image URLs or upload image files at their own discretion.
 - Do not store passwords in application tables.
 
 ### Authentication

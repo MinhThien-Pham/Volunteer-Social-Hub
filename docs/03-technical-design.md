@@ -40,6 +40,7 @@ The implementation must:
 
 - Supabase PostgreSQL
 - Supabase Auth with email/password
+- Supabase Storage for uploaded post images
 - `@supabase/supabase-js`
 
 ### Optional Deployment
@@ -158,6 +159,7 @@ Before any real deployment that uses private or sensitive data:
 src/
 ├── components/
 │   ├── Card.jsx
+│   ├── PostImagesInput.jsx
 │   ├── Navbar.jsx
 │   ├── Comment.jsx
 │   └── CommentForm.jsx
@@ -173,6 +175,8 @@ src/
 │   └── NotFound.jsx
 ├── routes/
 │   └── Layout.jsx
+├── utils/
+│   └── postImages.js
 ├── client.js
 ├── App.jsx
 ├── App.css
@@ -362,8 +366,9 @@ Use one controlled object state for create and edit forms.
 const [post, setPost] = useState({
   title: "",
   content: "",
-  image_url: "",
 });
+
+const [images, setImages] = useState([]);
 ```
 
 ```js
@@ -378,6 +383,36 @@ const handleChange = (event) => {
 Use the same form shape for create and edit when practical.
 
 Do not add a form library.
+
+### Post Image Input and Storage
+
+Post create and edit forms use the reusable `PostImagesInput` component.
+
+The component supports:
+
+- Selecting multiple local image files
+- Adding direct external image URLs
+- Combining uploaded files and URLs
+- Previewing selected images
+- Removing images before submission
+- A maximum of six images
+
+Local validation requires:
+
+- An image MIME type
+- A maximum file size of 5 MB
+- A maximum resolution of 4096 × 4096 pixels
+
+Uploaded post files use:
+
+```text
+Bucket: community-media
+Path: <user-id>/posts/<unique-file-name>
+```
+
+`src/utils/postImages.js` validates images, uploads local files, obtains public URLs, and resolves the final ordered URL array.
+
+The application stores the complete array in `posts.image_urls` and temporarily stores its first item in `posts.image_url` for compatibility.
 
 ---
 
@@ -464,16 +499,19 @@ Before insert:
 Logical operation:
 
 ```js
-await supabase
-  .from("posts")
-  .insert({
-    title: post.title.trim(),
-    content: post.content,
-    image_url: post.image_url,
-    author_id: session.user.id,
-    upvotes: 0,
-  })
-  .select();
+const imageUrls = await resolvePostImageUrls(
+  images,
+  session.user.id,
+);
+
+await supabase.from("posts").insert({
+  title: post.title.trim(),
+  content: post.content.trim() || null,
+  image_urls: imageUrls,
+  image_url: imageUrls[0] ?? null,
+  author_id: session.user.id,
+  upvotes: 0,
+});
 ```
 
 After success, redirect to the created post detail page if the returned ID is available. Redirecting home is an acceptable fallback.
@@ -493,12 +531,18 @@ Before update:
 Use a direct Supabase update:
 
 ```js
+const imageUrls = await resolvePostImageUrls(
+  images,
+  session.user.id,
+);
+
 await supabase
   .from("posts")
   .update({
     title: post.title.trim(),
-    content: post.content,
-    image_url: post.image_url,
+    content: post.content.trim() || null,
+    image_urls: imageUrls,
+    image_url: imageUrls[0] ?? null,
   })
   .eq("id", id);
 ```

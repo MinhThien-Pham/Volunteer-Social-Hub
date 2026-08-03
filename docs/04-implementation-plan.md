@@ -763,13 +763,22 @@ Do not start stretch features during the final hour.
 
 Only after the Definition of Done is satisfied:
 
-1. Edit/delete own comments
-2. Profile editing
-3. Avatar and bio display
-4. Netlify deployment
-5. RLS and ownership policies
-6. Safer atomic upvote handling
-7. Google sign-in
-8. Organization email-domain restriction
+1. Profile page, display name, avatar, and bio editing
+2. Edit/delete own comments
+3. Post categories and filtering
+4. Dark theme
+5. Netlify deployment
+6. RLS and ownership policies
+7. Safer atomic upvote handling
+8. Google sign-in
 
 Security hardening should occur before using real users or private organizational data.
+
+### Profile Stretch Completion Gate
+
+- Guest can open a member profile.
+- Profile shows the member's posts.
+- Signed-in member can edit only their own profile through the normal UI.
+- Display name updates in the navigation.
+- Post and comment author names link to profiles.
+- Avatar and bio persist after refresh.

@@ -19,7 +19,7 @@ function Layout({ session, currentProfile, onLogout }) {
 
           {session ? (
             <>
-              <span>{displayName}</span>
+              <Link to={`/profiles/${session.user.id}`}> {displayName} </Link>
 
               <button type="button" onClick={onLogout}>
                 Log Out

@@ -179,7 +179,6 @@ The core post model includes only:
 
 The MVP should not prevent future additions such as:
 
-- Full profile pages
 - Tags
 - Google sign-in
 - Private organization membership
@@ -203,7 +202,7 @@ The following features are not part of the core MVP:
 - Location metadata
 - Status metadata
 - Full profile pages
-- Bio and social links
+- Social links
 - Google sign-in
 - Organization-specific email-domain restrictions
 - Direct image uploads
@@ -272,6 +271,17 @@ Only after P0 and important P1 work are stable:
 6. Author profile pages showing that user's posts
 7. Google sign-in
 8. Tags and filters
+
+### 8.4 Selected Profile Stretch Scope
+
+The implemented profile stretch includes:
+
+1. Public member profile pages
+2. Display name editing
+3. Avatar URL editing
+4. Bio editing
+5. Author profile pages showing that member's posts
+6. Profile links from the navigation, posts, and comments
 
 ---
 

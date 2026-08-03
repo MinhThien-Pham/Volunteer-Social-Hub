@@ -162,6 +162,8 @@ src/
 │   ├── Comment.jsx
 │   └── CommentForm.jsx
 ├── pages/
+│   ├── Profile.jsx
+│   ├── EditProfile.jsx
 │   ├── ReadPosts.jsx
 │   ├── CreatePost.jsx
 │   ├── PostDetail.jsx
@@ -217,14 +219,14 @@ Use `BrowserRouter`, nested routes, `Layout`, and `Outlet` for shared navigation
 | Route | Page |
 |---|---|
 | `/` | ReadPosts |
+| `/profiles/:id` | Profile |
+| `/profile/edit` | EditProfile |
 | `/posts/new` | CreatePost |
 | `/posts/:id` | PostDetail |
 | `/posts/:id/edit` | EditPost |
 | `/login` | Login |
 | `/signup` | Signup |
 | `*` | NotFound |
-
-`/profiles/:id` is future scope.
 
 Use `Link` for normal navigation and `useParams()` for post IDs.
 
@@ -297,6 +299,20 @@ On startup:
 3. Fetch the matching profile when a session exists.
 
 No Auth Context is required for the MVP.
+
+### Profile Pages
+
+`/profiles/:id` is publicly readable and displays the member's profile and posts.
+
+`/profile/edit` requires a session and always updates the profile matching the current Auth user ID.
+
+Profile editing supports:
+
+- Display name
+- Avatar URL
+- Bio
+
+After a successful update, `App.jsx` refreshes `currentProfile` so the navigation updates without a page refresh.
 
 ### Basic Profile Failure Handling
 

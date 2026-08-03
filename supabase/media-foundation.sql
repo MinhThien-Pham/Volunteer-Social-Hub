@@ -1,15 +1,9 @@
--- Add ordered post image URLs while preserving the legacy image_url field.
+-- Add ordered post image URLs.
 
 alter table public.posts
 add column if not exists image_urls text[]
 not null
 default '{}'::text[];
-
-update public.posts
-set image_urls = array[image_url]
-where image_url is not null
-  and btrim(image_url) <> ''
-  and cardinality(image_urls) = 0;
 
 do $$
 begin
@@ -26,6 +20,11 @@ begin
 end
 $$;
 
+-- Remove the previous single-image field.
+-- All post images are now stored in image_urls.
+
+alter table public.posts
+drop column if exists image_url;
 
 -- Supabase Storage requires an INSERT policy for browser uploads.
 -- Application-table RLS remains disabled.

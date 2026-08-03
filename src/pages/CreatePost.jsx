@@ -52,8 +52,7 @@ const CreatePost = ({ session }) => {
       const { error } = await supabase.from("posts").insert({
         author_id: session.user.id,
         title: trimmedTitle,
-        content: post.content.trim() || null,
-        image_url: imageUrls[0] ?? null,
+        content: post.content.trim() || null,        
         image_urls: imageUrls,
         upvotes: 0,
       });

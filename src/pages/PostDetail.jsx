@@ -16,6 +16,13 @@ const PostDetail = ({ session }) => {
   const [commentContent, setCommentContent] = useState("");
   const [commentMessage, setCommentMessage] = useState("");
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
+  const [voteMessage, setVoteMessage] = useState("");
+  const [postActionMessage, setPostActionMessage] = useState("");
+  const [commentsLoadMessage, setCommentsLoadMessage] = useState("");
+  const [commentActionMessage, setCommentActionMessage] = useState({
+    commentId: null,
+    text: "",
+  });
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [savingCommentId, setSavingCommentId] = useState(null);
@@ -85,8 +92,10 @@ const PostDetail = ({ session }) => {
       }
 
       if (commentsError) {
-        setMessage(commentsError.message);
+        setCommentsLoadMessage(commentsError.message);
+        setComments([]);
       } else {
+        setCommentsLoadMessage("");
         setComments(commentsData ?? []);
       }
 
@@ -106,13 +115,13 @@ const PostDetail = ({ session }) => {
 
   const handleUpvote = async () => {
     if (!session) {
-      setMessage("Please log in to support this post.");
+      setVoteMessage("Please log in to support this post.");
       return;
     }
 
     const nextUpvotes = post.upvotes + 1;
 
-    setMessage("");
+    setVoteMessage("");
     setIsUpvoting(true);
 
     const { data, error } = await supabase
@@ -127,7 +136,7 @@ const PostDetail = ({ session }) => {
     setIsUpvoting(false);
 
     if (error) {
-      setMessage(error.message);
+      setVoteMessage(error.message);
       return;
     }
 
@@ -135,6 +144,8 @@ const PostDetail = ({ session }) => {
       ...currentPost,
       upvotes: data.upvotes,
     }));
+
+    setVoteMessage("");
   };
 
   const handleCommentSubmit = async (event) => {
@@ -191,11 +202,14 @@ const PostDetail = ({ session }) => {
 
   const startEditingComment = (comment) => {
     if (session?.user?.id !== comment.author_id) {
-      setMessage("You can only edit your own comment.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "You can only edit your own comment.",
+      });
       return;
     }
 
-    setMessage("");
+    setCommentActionMessage({ commentId: null, text: "" });
     setEditingCommentId(comment.id);
     setEditingCommentContent(comment.content);
   };
@@ -203,24 +217,31 @@ const PostDetail = ({ session }) => {
   const cancelEditingComment = () => {
     setEditingCommentId(null);
     setEditingCommentContent("");
+    setCommentActionMessage({ commentId: null, text: "" });
   };
 
   const handleCommentUpdate = async (event, comment) => {
     event.preventDefault();
 
     if (session?.user?.id !== comment.author_id) {
-      setMessage("You can only edit your own comment.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "You can only edit your own comment.",
+      });
       return;
     }
 
     const trimmedContent = editingCommentContent.trim();
 
     if (!trimmedContent) {
-      setMessage("Comment cannot be empty.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "Comment cannot be empty.",
+      });
       return;
     }
 
-    setMessage("");
+    setCommentActionMessage({ commentId: null, text: "" });
     setSavingCommentId(comment.id);
 
     const { data, error } = await supabase
@@ -234,14 +255,21 @@ const PostDetail = ({ session }) => {
       .maybeSingle();
 
     setSavingCommentId(null);
+    setCommentActionMessage({ commentId: null, text: "" });
 
     if (error) {
-      setMessage(error.message);
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: error.message,
+      });
       return;
     }
 
     if (!data) {
-      setMessage("Comment could not be updated.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "Comment could not be updated.",
+      });
       return;
     }
 
@@ -261,7 +289,10 @@ const PostDetail = ({ session }) => {
 
   const handleCommentDelete = async (comment) => {
     if (session?.user?.id !== comment.author_id) {
-      setMessage("You can only delete your own comment.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "You can only delete your own comment.",
+      });
       return;
     }
 
@@ -273,7 +304,7 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    setMessage("");
+    setCommentActionMessage({ commentId: null, text: "" });
     setDeletingCommentId(comment.id);
 
     const { data, error } = await supabase
@@ -285,14 +316,21 @@ const PostDetail = ({ session }) => {
       .maybeSingle();
 
     setDeletingCommentId(null);
+    setCommentActionMessage({ commentId: null, text: "" });
 
     if (error) {
-      setMessage(error.message);
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: error.message,
+      });
       return;
     }
 
     if (!data) {
-      setMessage("Comment could not be deleted.");
+      setCommentActionMessage({
+        commentId: comment.id,
+        text: "Comment could not be deleted.",
+      });
       return;
     }
 
@@ -311,7 +349,7 @@ const PostDetail = ({ session }) => {
     const isOwner = session?.user?.id === post.author_id;
 
     if (!isOwner) {
-      setMessage("You can only delete your own post.");
+      setPostActionMessage("You can only delete your own post.");
       return;
     }
 
@@ -323,7 +361,7 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    setMessage("");
+    setPostActionMessage("");
     setIsDeleting(true);
 
     const { error } = await supabase
@@ -335,7 +373,7 @@ const PostDetail = ({ session }) => {
     setIsDeleting(false);
 
     if (error) {
-      setMessage(error.message);
+      setPostActionMessage(error.message);
       return;
     }
 
@@ -412,22 +450,43 @@ const PostDetail = ({ session }) => {
         ↑ {post.upvotes}
       </button>
 
-      {isOwner && (
-        <div className="post-actions">
-          <Link to={`/posts/${post.id}/edit`}>Edit Post</Link>
-
-          <button
-            className="danger-button"
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete Post"}
-          </button>
-        </div>
+      {voteMessage && (
+        <p className="inline-action-message" role="alert">
+          {voteMessage}
+        </p>
       )}
+
+      {isOwner && (
+        <>
+          <div className="post-actions">
+            <Link to={`/posts/${post.id}/edit`}>Edit Post</Link>
+
+            <button
+              className="danger-button"
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete Post"}
+            </button>
+          </div>
+
+          {postActionMessage && (
+            <p className="inline-action-message" role="alert">
+              {postActionMessage}
+            </p>
+          )}
+        </>
+      )}
+
       <section className="comments-section">
         <h2>Comments</h2>
+
+        {commentsLoadMessage && (
+          <p className="inline-action-message" role="alert">
+            {commentsLoadMessage}
+          </p>
+        )}
 
         <form onSubmit={handleCommentSubmit}>
           <div>
@@ -449,7 +508,6 @@ const PostDetail = ({ session }) => {
               {commentMessage}
             </p>
           )}
-
         </form>
 
         {comments.length === 0 ? (
@@ -537,6 +595,13 @@ const PostDetail = ({ session }) => {
                       </div>
                     )}
                   </>
+                )}
+
+                {commentActionMessage.commentId === comment.id &&
+                commentActionMessage.text && (
+                  <p className="inline-action-message" role="alert">
+                    {commentActionMessage.text}
+                  </p>
                 )}
               </article>
             );

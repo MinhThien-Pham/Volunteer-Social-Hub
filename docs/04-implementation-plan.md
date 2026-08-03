@@ -797,3 +797,7 @@ Security hardening should occur before using real users or private organizationa
 - Selected images can be previewed and removed.
 - Create and edit flows preserve image order.
 - The complete ordered list persists in `image_urls`.
+- Post detail displays all stored images in their saved order.
+- Carousel arrows appear only when movement in that direction is possible.
+- Position dots show and change the active image.
+- A broken image does not prevent navigation to other images.

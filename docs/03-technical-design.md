@@ -159,6 +159,7 @@ Before any real deployment that uses private or sensitive data:
 src/
 ├── components/
 │   ├── Card.jsx
+│   ├── ImageCarousel.jsx
 │   ├── PostImagesInput.jsx
 │   ├── Navbar.jsx
 │   ├── Comment.jsx
@@ -413,6 +414,21 @@ Path: <user-id>/posts/<unique-file-name>
 `src/utils/postImages.js` validates images, uploads local files, obtains public URLs, and resolves the final ordered URL array.
 
 The application stores the complete ordered array in `posts.image_urls`.
+
+### Post Image Carousel
+
+`ImageCarousel` displays the ordered `image_urls` array on the post detail page.
+
+Behavior:
+
+- A post with no images does not render the carousel.
+- One image displays without navigation controls.
+- The first image displays only a next arrow.
+- Middle images display previous and next arrows.
+- The final image displays only a previous arrow.
+- Position dots identify and select the current image.
+- A broken image displays a fallback message without preventing navigation.
+- The carousel does not autoplay or implement custom keyboard navigation.
 
 ---
 

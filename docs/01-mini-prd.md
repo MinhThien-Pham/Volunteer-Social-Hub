@@ -294,6 +294,7 @@ The implemented post-media stretch includes:
 7. Editing the image list of an existing post
 8. A 5 MB file-size limit per uploaded image
 9. A maximum resolution of 4096 × 4096 pixels
+10. Manual image carousel navigation with directional arrows and position indicators
 
 ---
 

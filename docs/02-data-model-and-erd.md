@@ -85,7 +85,7 @@ The profile owner may update their own display name and optional profile informa
 
 A post represents content published to the community.
 
-A post requires a title and may include text content and one external image URL.
+A post requires a title and may include text content and up to six ordered images from local uploads or direct external URLs.
 
 ### Fields
 
@@ -95,7 +95,8 @@ A post requires a title and may include text content and one external image URL.
 | `author_id` | Yes | Foreign key referencing the author profile |
 | `title` | Yes | Post title |
 | `content` | No | Full text content |
-| `image_url` | No | External image URL |
+| `image_url` | No | Temporary compatibility field containing the first image URL |
+| `image_urls` | Yes | Ordered array of zero to six uploaded or external image URLs |
 | `upvotes` | Yes | Unlimited upward-arrow click count |
 | `created_at` | Yes | Post creation timestamp |
 | `updated_at` | Yes | Last post update timestamp |
@@ -104,7 +105,10 @@ A post requires a title and may include text content and one external image URL.
 
 - `title` must not be empty after trimming whitespace.
 - `content` may be null or empty.
-- `image_url` may be null or empty.
+- `image_urls` defaults to an empty array.
+- `image_urls` may contain at most six entries.
+- `image_url` is null when the post has no images.
+- During the migration period, `image_url` mirrors the first entry in `image_urls`.
 - `upvotes` defaults to `0`.
 - `upvotes` cannot be negative.
 - `author_id` must reference an existing profile.
@@ -116,7 +120,7 @@ The MVP stores only the current version of a post.
 
 When a post is edited:
 
-- `title`, `content`, and `image_url` may change.
+- `title`, `content`, `image_urls`, and the compatibility `image_url` value may change.
 - `updated_at` changes.
 - `created_at` remains unchanged.
 - Previous versions are not preserved.
@@ -268,21 +272,34 @@ A separate table would become necessary only if the product later required:
 
 ## 8. Image Modeling
 
-The MVP supports at most one external image URL per post.
-
-The value is stored directly in:
+Posts store their ordered image list in:
 
 ```text
-posts.image_url
+posts.image_urls
 ```
 
-A separate image entity is unnecessary because the MVP does not include:
+The array:
 
-- File uploads
-- Multiple images
-- Image ordering
-- Captions per image
-- Storage metadata
+- Defaults to an empty array
+- Contains at most six URLs
+- Preserves the order in which images were added
+- May contain Supabase Storage public URLs
+- May contain direct external image URLs
+- May contain a combination of both
+
+Uploaded files are stored in the public `community-media` bucket under:
+
+```text
+<user-id>/posts/<unique-file-name>
+```
+
+The legacy `posts.image_url` field remains temporarily for compatibility and mirrors the first item in `image_urls`.
+
+A separate image table is not required because the application does not currently store:
+
+- Per-image captions
+- Per-image ownership
+- Additional image metadata
 
 ---
 
@@ -373,6 +390,7 @@ The authentication provider manages login credentials. Application tables store 
 - Primary key: `id`
 - `author_id`: required foreign key
 - `title`: required
+- `image_urls`: required array, default empty, maximum six entries
 - `upvotes`: default `0`, minimum `0`
 - `created_at`: automatically assigned
 - `updated_at`: automatically assigned or updated by application logic
@@ -414,6 +432,7 @@ erDiagram
         string title
         string content
         string image_url
+        string[] image_urls
         integer upvotes
         datetime created_at
         datetime updated_at

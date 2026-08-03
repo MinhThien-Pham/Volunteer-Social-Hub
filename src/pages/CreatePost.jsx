@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../client.js";
+import PostImagesInput from "../components/PostImagesInput.jsx";
+import { resolvePostImageUrls } from "../utils/postImages.js";
 
 const CreatePost = ({ session }) => {
   const navigate = useNavigate();
@@ -8,9 +10,9 @@ const CreatePost = ({ session }) => {
   const [post, setPost] = useState({
     title: "",
     content: "",
-    image_url: "",
   });
 
+  const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,22 +43,31 @@ const CreatePost = ({ session }) => {
     setMessage("");
     setIsSubmitting(true);
 
-    const { error } = await supabase.from("posts").insert({
-      author_id: session.user.id,
-      title: trimmedTitle,
-      content: post.content.trim() || null,
-      image_url: post.image_url.trim() || null,
-      upvotes: 0,
-    });
+    try {
+      const imageUrls = await resolvePostImageUrls(
+        images,
+        session.user.id,
+      );
 
-    setIsSubmitting(false);
+      const { error } = await supabase.from("posts").insert({
+        author_id: session.user.id,
+        title: trimmedTitle,
+        content: post.content.trim() || null,
+        image_url: imageUrls[0] ?? null,
+        image_urls: imageUrls,
+        upvotes: 0,
+      });
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      navigate("/");
+    } catch (error) {
       setMessage(error.message);
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    navigate("/");
   };
 
   return (
@@ -66,6 +77,7 @@ const CreatePost = ({ session }) => {
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="post-title">Title</label>
+
           <input
             id="post-title"
             name="title"
@@ -78,6 +90,7 @@ const CreatePost = ({ session }) => {
 
         <div>
           <label htmlFor="post-content">Content</label>
+
           <textarea
             id="post-content"
             name="content"
@@ -86,16 +99,13 @@ const CreatePost = ({ session }) => {
           />
         </div>
 
-        <div>
-          <label htmlFor="post-image-url">Image URL</label>
-          <input
-            id="post-image-url"
-            name="image_url"
-            type="url"
-            value={post.image_url}
-            onChange={handleChange}
-          />
-        </div>
+        <PostImagesInput
+          idPrefix="create-post"
+          images={images}
+          onImagesChange={setImages}
+          onMessage={setMessage}
+          disabled={isSubmitting}
+        />
 
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating post..." : "Create Post"}

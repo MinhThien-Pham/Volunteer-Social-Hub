@@ -269,14 +269,10 @@ const PostDetail = ({ session }) => {
 
       {post.content && <p className="post-content">{post.content}</p>}
 
-      {imageUrls[0] && (
-        <img
-          className="post-image"
-          src={imageUrls[0]}
-          alt={`Attachment for ${post.title}`}
-          onError={handleBrokenImage}
-        />
-      )}
+      <ImageCarousel
+        imageUrls={imageUrls}
+        title={post.title}
+      />
 
       <button
         className="vote-button"

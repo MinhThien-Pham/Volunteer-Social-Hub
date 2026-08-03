@@ -10,6 +10,8 @@ import EditPost from "./pages/EditPost.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import Profile from "./pages/Profile.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
 import "./App.css";
 
 function App() {
@@ -133,6 +135,23 @@ function App() {
           element={
             <RequireAuth session={session}>
               <EditPost session={session} />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="profiles/:id"
+          element={<Profile session={session} />}
+        />
+
+        <Route
+          path="profile/edit"
+          element={
+            <RequireAuth session={session}>
+              <EditProfile
+                session={session}
+                onProfileUpdated={setCurrentProfile}
+              />
             </RequireAuth>
           }
         />

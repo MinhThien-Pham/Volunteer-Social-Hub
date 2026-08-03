@@ -253,11 +253,16 @@ const PostDetail = ({ session }) => {
         />
       )}
 
-      <p className="post-author">By {authorName}</p>
+      <p className="post-author">
+        By{" "}
+        <Link to={`/profiles/${post.author_id}`}>
+          {authorName}
+        </Link>
+      </p>
       <p className="post-time">
         {new Date(post.created_at).toLocaleString()}
       </p>
-      
+
       <h1>{post.title}</h1>
 
       {post.content && <p className="post-content">{post.content}</p>}
@@ -320,7 +325,9 @@ const PostDetail = ({ session }) => {
           comments.map((comment) => (
             <article className="comment-card" key={comment.id}>
               <p className="comment-author">
-                {comment.author?.display_name ?? "Unknown member"}
+                <Link to={`/profiles/${comment.author_id}`}>
+                  {comment.author?.display_name ?? "Unknown member"}
+                </Link>
               </p>
 
               <p className="comment-time">

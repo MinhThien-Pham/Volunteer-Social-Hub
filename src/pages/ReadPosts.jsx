@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { supabase } from "../client.js";
 import Card from "../components/Card.jsx";
 import { POST_CATEGORIES } from "../constants/postCategories.js";
 
-const ReadPosts = () => {
+const SORT_OPTIONS = [
+  {
+    value: "newest",
+    label: "Newest",
+  },
+  {
+    value: "supported",
+    label: "Most Supported",
+  },
+];
+
+const ReadPosts = ({ searchInput }) => {
   const [posts, setPosts] = useState([]);
-  const [searchInput, setSearchInput] = useState("");
-  const [sortOption, setSortOption] = useState("newest");
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [isLoading, setIsLoading] = useState(true);
+  const [sortOption, setSortOption] =
+    useState("newest");
+
+  const [categoryFilter, setCategoryFilter] =
+    useState("All");
+
+  const [isSortMenuOpen, setIsSortMenuOpen] =
+    useState(false);
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -20,14 +40,33 @@ const ReadPosts = () => {
 
       let query = supabase
         .from("posts")
-        .select("id, title, category, upvotes, created_at");
+        .select(`
+          id,
+          author_id,
+          title,
+          content,
+          category,
+          image_urls,
+          upvotes,
+          created_at,
+          author:profiles!posts_author_id_fkey (
+            display_name,
+            avatar_url
+          ),
+          comments:comments!comments_post_id_fkey (
+            id
+          )
+        `);
 
       if (sortOption === "supported") {
         query = query
           .order("upvotes", { ascending: false })
           .order("created_at", { ascending: false });
       } else {
-        query = query.order("created_at", { ascending: false });
+        query = query.order(
+          "created_at",
+          { ascending: false },
+        );
       }
 
       const { data, error } = await query;
@@ -54,7 +93,8 @@ const ReadPosts = () => {
     };
   }, [sortOption]);
 
-  const normalizedSearch = searchInput.trim().toLowerCase();
+  const normalizedSearch =
+    searchInput.trim().toLowerCase();
 
   const filteredPosts = posts.filter((post) => {
     const matchesSearch = post.title
@@ -68,75 +108,114 @@ const ReadPosts = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const activeSortLabel =
+    SORT_OPTIONS.find(
+      (option) => option.value === sortOption,
+    )?.label ?? "Newest";
+
+  const handleSortChange = (nextSortOption) => {
+    setSortOption(nextSortOption);
+    setIsSortMenuOpen(false);
+  };
+
   return (
     <section className="feed-page">
-      <h1>Community Posts</h1>
-
-      <div className="feed-toolbar">
-        <div>
-          <label htmlFor="post-search">Search Posts</label>
-          <input
-            id="post-search"
-            type="search"
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Search by title"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="post-category-filter">Category</label>
-
-          <select
-            id="post-category-filter"
-            value={categoryFilter}
-            onChange={(event) =>
-              setCategoryFilter(event.target.value)
+      <div className="feed-topbar">
+        <div className="feed-sort">
+          <button
+            className="feed-sort-trigger"
+            type="button"
+            onClick={() =>
+              setIsSortMenuOpen(
+                (currentValue) => !currentValue,
+              )
             }
+            aria-haspopup="menu"
+            aria-expanded={isSortMenuOpen}
           >
-            <option value="All">All Categories</option>
+            {activeSortLabel}
+            <span aria-hidden="true">⌄</span>
+          </button>
 
-            {POST_CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+          {isSortMenuOpen && (
+            <div
+              className="feed-sort-options"
+              role="menu"
+            >
+              {SORT_OPTIONS.map((option) => (
+                <button
+                  className={
+                    option.value === sortOption
+                      ? "feed-sort-option feed-sort-option-active"
+                      : "feed-sort-option"
+                  }
+                  key={option.value}
+                  type="button"
+                  role="menuitem"
+                  onClick={() =>
+                    handleSortChange(option.value)
+                  }
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div>
-          <label htmlFor="post-sort">Sort Posts</label>
-          <select
-            id="post-sort"
-            value={sortOption}
-            onChange={(event) => setSortOption(event.target.value)}
-          >
-            <option value="newest">Newest</option>
-            <option value="supported">Most Supported</option>
-          </select>
-        </div>
+        <Link
+          className="create-post-link"
+          to="/posts/new"
+        >
+          <span aria-hidden="true">+</span>
+          Create Post
+        </Link>
       </div>
 
-      {isLoading && <p>Loading posts...</p>}
+      <div
+        className="category-filter"
+        aria-label="Filter posts by category"
+      >
+        {["All", ...POST_CATEGORIES].map(
+          (category) => (
+            <button
+              className={
+                category === categoryFilter
+                  ? "category-filter-button category-filter-button-active"
+                  : "category-filter-button"
+              }
+              key={category}
+              type="button"
+              onClick={() =>
+                setCategoryFilter(category)
+              }
+              aria-pressed={
+                category === categoryFilter
+              }
+            >
+              {category === "All"
+                ? "All Posts"
+                : category}
+            </button>
+          ),
+        )}
+      </div>
 
-      {!isLoading && message && <p role="alert">{message}</p>}
+      {message && <p role="alert">{message}</p>}
 
-      {!isLoading && !message && posts.length === 0 && (
-        <p>No posts yet.</p>
-      )}
-
-      {!isLoading &&
-        !message &&
-        posts.length > 0 &&
-        filteredPosts.length === 0 && <p>No posts match your current filters.</p>}
-
-      <div className="post-list">
-        {!isLoading &&
-          !message &&
-          filteredPosts.map((post) => (
+      {isLoading ? (
+        <p className="feed-status">Loading posts...</p>
+      ) : filteredPosts.length === 0 ? (
+        <p className="feed-status">
+          No posts match your current filters.
+        </p>
+      ) : (
+        <div className="post-list">
+          {filteredPosts.map((post) => (
             <Card key={post.id} post={post} />
           ))}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

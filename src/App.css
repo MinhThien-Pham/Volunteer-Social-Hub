@@ -187,6 +187,17 @@ body {
   box-shadow: var(--shadow);
 }
 
+.post-card-category,
+.post-detail-category {
+  margin: 0 0 0.45rem;
+  margin-top: 1rem;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .post-card-time {
   margin: 0 0 0.65rem;
   color: var(--text-muted);
@@ -558,6 +569,14 @@ body {
   }
 
   .feed-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px 180px;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
     grid-template-columns: 1fr;
   }
 

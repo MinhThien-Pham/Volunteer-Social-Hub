@@ -27,7 +27,6 @@ alter table public.posts
 drop column if exists image_url;
 
 -- Supabase Storage requires an INSERT policy for browser uploads.
--- Application-table RLS remains disabled.
 
 drop policy if exists "authenticated_upload_own_media"
 on storage.objects;

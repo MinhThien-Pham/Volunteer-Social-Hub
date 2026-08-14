@@ -1,124 +1,106 @@
-# Web Development Final Project - *Volunteer Social Hub*
+# Volunteer Social Hub
 
-Submitted by: **Minh Thien Pham**
+A responsive volunteer-focused community app for sharing opportunities, experiences, questions, photos, and resources.
 
-This web app: **A responsive volunteer community forum where members can share opportunities and experiences, ask questions, publish categorized posts with multiple images, support posts, comment, and connect through public profiles.**
+**Live demo:** https://volunteer-social-hub.netlify.app/  
+**Built for:** CodePath WEB102 final project
 
-Time spent: **20** hours spent in total
+## Features
 
-## Required Features
+### Public experience
 
-The following **required** functionality is completed:
+- Browse the community feed without an account
+- Search posts by title
+- Sort by newest or most supported
+- Filter by category
+- Open post details, comments, and public member profiles
+- View posts with up to six ordered images in a custom carousel
 
+### Member experience
 
-- [X] **Web app includes a create form that allows the user to create posts**
-  - Form requires users to add a post title
-  - Forms should have the *option* for users to add: 
-    - additional textual content
-    - an image added as an external image URL
-- [X] **Web app includes a home feed displaying previously created posts**
-  - Web app must include home feed displaying previously created posts
-  - By default, each post on the posts feed should show only the post's:
-    - creation time
-    - title 
-    - upvotes count
-  - Clicking on a post should direct the user to a new page for the selected post
-- [X] **Users can view posts in different ways**
-  - Users can sort posts by either:
-    -  creation time
-    -  upvotes count
-  - Users can search for posts by title
-- [X] **Users can interact with each post in different ways**
-  - The app includes a separate post page for each created post when clicked, where any additional information is shown, including:
-    - content
-    - image
-    - comments
-  - Users can leave comments underneath a post on the post page
-  - Each post includes an upvote button on the post page. 
-    - Each click increases the post's upvotes count by one
-    - Users can upvote any post any number of times
+- Sign up and log in with Supabase Auth
+- Create, edit, and delete owned posts
+- Add, edit, and delete owned comments
+- Support posts with persistent upvote counts
+- Maintain a public profile with display name, bio, and avatar
+- Upload local images or use external image URLs
 
-- [X] **A post that a user previously created can be edited or deleted from its post pages**
-  - After a user creates a new post, they can go back and edit the post
-  - A previously created post can be deleted from its post page
+## Tech Stack
 
-The following **optional** features are implemented:
+- **Frontend:** React, Vite, React Router, JavaScript, CSS
+- **Backend services:** Supabase PostgreSQL, Auth, Storage, Data API
+- **Deployment:** Netlify
+- **Code quality:** ESLint, Prettier
 
+The application is client-side and communicates directly with Supabase; it does not use a separate custom backend server.
 
-- [ ] Web app implements pseudo-authentication
-  - Users can only edit and delete posts or delete comments by entering the secret key, which is set by the user during post creation
-  - **or** upon launching the web app, the user is assigned a random user ID. It will be associated with all posts and comments that they make and displayed on them
-  - For both options, only the original user author of a post can update or delete it
-- [ ] Users can repost a previous post by referencing its post ID. On the post page of the new post
-  - Users can repost a previous post by referencing its post ID
-  - On the post page of the new post, the referenced post is displayed and linked, creating a thread
-- [X] Users can customize the interface
-  - e.g., selecting the color scheme or showing the content and image of each post on the home feed
-- [ ] Users can add more characterics to their posts
-  - Users can share and view web videos
-  - Users can set flags such as "Question" or "Opinion" while creating a post
-  - Users can filter posts by flags on the home feed
-  - Users can upload images directly from their local machine as an image file
-- [ ] Web app displays a loading animation whenever data is being fetched
+## Security
 
-The following **additional** features are implemented:
+The public Supabase tables use Row Level Security (RLS) and least-privilege grants.
 
-* [X] Supabase email/password authentication
-* [X] Public member profiles
-* [X] Editable display name, bio, and avatar
-* [X] Local avatar uploads
-* [X] Up to six images per post
-* [X] Image previews before submission
-* [X] Multi-image carousel with arrows and position dots
-* [X] Post categories and category filtering
-* [X] Edit and delete own comments
-* [X] Global title search
-* [X] Responsive desktop and mobile feed
-* [X] Author links and avatar dropdown navigation
+- Guests can read public profiles, posts, and comments.
+- Authenticated users can create posts and comments only as themselves.
+- Profiles, posts, and comments can only be updated or deleted by their owners.
+- Client writes are restricted to the specific columns required by each workflow.
+- Public profiles are created automatically from new Supabase Auth users through a database trigger.
+- Post support counts cannot be set directly by the client; authenticated users increment them through a scoped database RPC.
+- Supabase Storage upload policies restrict uploads to paths owned by the authenticated user.
 
-## Video Walkthrough
+## Project Structure
 
-Here's a walkthrough of implemented user stories:
+```text
+src/
+├── components/          Reusable UI components
+├── constants/           Shared post-category values
+├── pages/               Route-level screens
+├── routes/              Shared layout and protected-route logic
+├── utils/               Image validation and upload helpers
+├── App.jsx              Routes, auth state, and profile state
+└── client.js             Supabase client configuration
+```
 
-<img src='./walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+## Local Development
 
-Backup: https://imgur.com/a/udIuvKC
+```bash
+npm install
+npm run dev
+```
 
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  
-[ScreenToGif](https://www.screentogif.com/) for Windows
+Create a `.env` file based on `.env.example`:
 
-## Notes
+```text
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```
 
-### Challenges
+Never place a Supabase service-role or secret key in the client application.
 
-- Integrating Supabase Auth, PostgreSQL, and Storage into one React application
-- Supporting both local image uploads and external image URLs
-- Preserving the order of multiple post images
-- Building a reusable carousel without a third-party carousel package
-- Keeping profile and avatar data synchronized after updates
-- Managing post and comment ownership controls in the interface
-- Redesigning the original layout into a responsive social feed
+Useful checks:
 
-### Current Limitations
+```bash
+npm run format:check
+npm run lint
+npm run build
+```
 
-- Row Level Security is disabled for this demo project.
-- The project should use RLS and database-enforced ownership policies before handling private or sensitive production data.
-- Upvotes are intentionally unlimited and are not tracked per user.
-- External image URLs may stop working if the external host removes the image.
+## Documentation
+
+- [Product overview](./docs/01-product-overview.md)
+- [Data model and ERD](./docs/02-data-model-and-erd.md)
+- [Technical overview](./docs/03-technical-overview.md)
+
+## Walkthrough
+
+<img src="./walkthrough.gif" alt="Volunteer Social Hub walkthrough" />
+
+Backup walkthrough: https://imgur.com/a/udIuvKC
+
+## CodePath
+
+Volunteer Social Hub was built as a CodePath WEB102 final project. The project applies the course's React and Supabase concepts in a complete deployed application, including routing, authentication, CRUD workflows, relational data, image storage, responsive UI, and database-enforced authorization.
 
 ## License
 
-    Copyright 2026 Minh Thien Pham
+Copyright 2026 Minh Thien Pham
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+Licensed under the Apache License, Version 2.0.

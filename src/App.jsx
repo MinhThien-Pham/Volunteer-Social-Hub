@@ -119,10 +119,7 @@ function App() {
           />
         }
       >
-        <Route
-          index
-          element={<ReadPosts searchInput={searchInput} />}
-        />
+        <Route index element={<ReadPosts searchInput={searchInput} />} />
 
         <Route
           path="posts/new"
@@ -144,19 +141,13 @@ function App() {
           }
         />
 
-        <Route
-          path="profiles/:id"
-          element={<Profile session={session} />}
-        />
+        <Route path="profiles/:id" element={<Profile session={session} />} />
 
         <Route
           path="profile/edit"
           element={
             <RequireAuth session={session}>
-              <EditProfile
-                session={session}
-                onProfileUpdated={setCurrentProfile}
-              />
+              <EditProfile session={session} onProfileUpdated={setCurrentProfile} />
             </RequireAuth>
           }
         />
@@ -167,6 +158,6 @@ function App() {
       </Route>
     </Routes>
   );
-};
+}
 
 export default App;

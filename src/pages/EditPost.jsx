@@ -9,11 +9,7 @@ const EditPost = ({ session }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [post, setPost] = useState({
-    title: "",
-    content: "",
-    category: DEFAULT_POST_CATEGORY,
-  });
+  const [post, setPost] = useState({ title: "", content: "", category: DEFAULT_POST_CATEGORY });
 
   const [images, setImages] = useState([]);
   const [authorId, setAuthorId] = useState(null);
@@ -56,13 +52,7 @@ const EditPost = ({ session }) => {
 
       const storedImageUrls = data.image_urls ?? [];
 
-      setImages(
-        storedImageUrls.map((url) => ({
-          id: crypto.randomUUID(),
-          kind: "url",
-          url,
-        })),
-      );
+      setImages(storedImageUrls.map((url) => ({ id: crypto.randomUUID(), kind: "url", url })));
 
       setIsLoading(false);
     };
@@ -77,10 +67,7 @@ const EditPost = ({ session }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    setPost((previousPost) => ({
-      ...previousPost,
-      [name]: value,
-    }));
+    setPost((previousPost) => ({ ...previousPost, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
@@ -102,17 +89,14 @@ const EditPost = ({ session }) => {
     setIsSubmitting(true);
 
     try {
-      const imageUrls = await resolvePostImageUrls(
-        images,
-        session.user.id,
-      );
+      const imageUrls = await resolvePostImageUrls(images, session.user.id);
 
       const { data, error } = await supabase
         .from("posts")
         .update({
           title: trimmedTitle,
-          content: post.content.trim() || null,     
-          category: post.category,     
+          content: post.content.trim() || null,
+          category: post.category,
           image_urls: imageUrls,
         })
         .eq("id", id)

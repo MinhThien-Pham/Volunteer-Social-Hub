@@ -1,29 +1,13 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import Avatar from "../components/Avatar.jsx";
 
-function Layout({
-  session,
-  currentProfile,
-  onLogout,
-  searchInput,
-  onSearchChange,
-}) {
+function Layout({ session, currentProfile, onLogout, searchInput, onSearchChange }) {
   const navigate = useNavigate();
   const location = useLocation();
   const accountMenuRef = useRef(null);
 
-  const [isAccountMenuOpen, setIsAccountMenuOpen] =
-    useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   const displayName =
     currentProfile?.display_name ||
@@ -33,24 +17,15 @@ function Layout({
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (
-        accountMenuRef.current &&
-        !accountMenuRef.current.contains(event.target)
-      ) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target)) {
         setIsAccountMenuOpen(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleOutsideClick,
-    );
+    document.addEventListener("mousedown", handleOutsideClick);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleOutsideClick,
-      );
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
 
@@ -76,16 +51,10 @@ function Layout({
     <div className="app">
       <header className="site-header">
         <div className="site-header-inner">
-          <Link
-            className="site-title"
-            to="/"
-            onClick={handleBrandClick}
-          >
+          <Link className="site-title" to="/" onClick={handleBrandClick}>
             <span className="site-title-mark">V</span>
 
-            <span className="site-title-text">
-              Volunteer Social Hub
-            </span>
+            <span className="site-title-text">Volunteer Social Hub</span>
           </Link>
 
           <div className="header-search">
@@ -104,18 +73,11 @@ function Layout({
 
           <div className="header-actions">
             {session ? (
-              <div
-                className="account-menu"
-                ref={accountMenuRef}
-              >
+              <div className="account-menu" ref={accountMenuRef}>
                 <button
                   className="account-trigger"
                   type="button"
-                  onClick={() =>
-                    setIsAccountMenuOpen(
-                      (currentValue) => !currentValue,
-                    )
-                  }
+                  onClick={() => setIsAccountMenuOpen((currentValue) => !currentValue)}
                   aria-label="Open account menu"
                   aria-haspopup="menu"
                   aria-expanded={isAccountMenuOpen}
@@ -128,10 +90,7 @@ function Layout({
                 </button>
 
                 {isAccountMenuOpen && (
-                  <div
-                    className="account-dropdown"
-                    role="menu"
-                  >
+                  <div className="account-dropdown" role="menu">
                     <div className="account-summary">
                       <strong>{displayName}</strong>
 
@@ -141,33 +100,21 @@ function Layout({
                     <Link
                       to={`/profiles/${session.user.id}`}
                       role="menuitem"
-                      onClick={() =>
-                        setIsAccountMenuOpen(false)
-                      }
+                      onClick={() => setIsAccountMenuOpen(false)}
                     >
                       View Profile
                     </Link>
 
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={handleLogoutClick}
-                    >
+                    <button type="button" role="menuitem" onClick={handleLogoutClick}>
                       Log Out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <nav
-                className="guest-nav"
-                aria-label="Account navigation"
-              >
+              <nav className="guest-nav" aria-label="Account navigation">
                 <Link to="/login">Log In</Link>
-                <Link
-                  className="signup-link"
-                  to="/signup"
-                >
+                <Link className="signup-link" to="/signup">
                   Sign Up
                 </Link>
               </nav>

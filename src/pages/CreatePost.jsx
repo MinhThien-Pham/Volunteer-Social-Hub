@@ -8,11 +8,7 @@ import { DEFAULT_POST_CATEGORY, POST_CATEGORIES } from "../constants/postCategor
 const CreatePost = ({ session }) => {
   const navigate = useNavigate();
 
-  const [post, setPost] = useState({
-    title: "",
-    content: "",
-    category: DEFAULT_POST_CATEGORY,
-  });
+  const [post, setPost] = useState({ title: "", content: "", category: DEFAULT_POST_CATEGORY });
 
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
@@ -21,10 +17,7 @@ const CreatePost = ({ session }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    setPost((previousPost) => ({
-      ...previousPost,
-      [name]: value,
-    }));
+    setPost((previousPost) => ({ ...previousPost, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
@@ -46,19 +39,17 @@ const CreatePost = ({ session }) => {
     setIsSubmitting(true);
 
     try {
-      const imageUrls = await resolvePostImageUrls(
-        images,
-        session.user.id,
-      );
+      const imageUrls = await resolvePostImageUrls(images, session.user.id);
 
-      const { error } = await supabase.from("posts").insert({
-        author_id: session.user.id,
-        title: trimmedTitle,
-        content: post.content.trim() || null, 
-        category: post.category,       
-        image_urls: imageUrls,
-        upvotes: 0,
-      });
+      const { error } = await supabase
+        .from("posts")
+        .insert({
+          author_id: session.user.id,
+          title: trimmedTitle,
+          content: post.content.trim() || null,
+          category: post.category,
+          image_urls: imageUrls,
+        });
 
       if (error) {
         throw error;
@@ -93,23 +84,13 @@ const CreatePost = ({ session }) => {
         <div>
           <label htmlFor="post-content">Content</label>
 
-          <textarea
-            id="post-content"
-            name="content"
-            value={post.content}
-            onChange={handleChange}
-          />
+          <textarea id="post-content" name="content" value={post.content} onChange={handleChange} />
         </div>
 
         <div>
           <label htmlFor="post-category">Category</label>
 
-          <select
-            id="post-category"
-            name="category"
-            value={post.category}
-            onChange={handleChange}
-          >
+          <select id="post-category" name="category" value={post.category} onChange={handleChange}>
             {POST_CATEGORIES.map((category) => (
               <option key={category} value={category}>
                 {category}

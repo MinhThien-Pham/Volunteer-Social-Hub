@@ -1,24 +1,13 @@
 import { useState } from "react";
 
-const Avatar = ({
-  src,
-  name,
-  className = "",
-}) => {
+const Avatar = ({ src, name, className = "" }) => {
   const [failedSrc, setFailedSrc] = useState(null);
 
-  const initial =
-    name?.trim().charAt(0).toUpperCase() || "?";
+  const initial = name?.trim().charAt(0).toUpperCase() || "?";
 
-  const combinedClassName = [
-    "avatar",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const combinedClassName = ["avatar", className].filter(Boolean).join(" ");
 
-  const shouldShowImage =
-    Boolean(src) && failedSrc !== src;
+  const shouldShowImage = Boolean(src) && failedSrc !== src;
 
   if (shouldShowImage) {
     return (

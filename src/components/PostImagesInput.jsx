@@ -1,17 +1,7 @@
 import { useState } from "react";
-import {
-  MAX_POST_IMAGES,
-  validateImageUrl,
-  validateLocalImage,
-} from "../utils/mediaImages.js";
+import { MAX_POST_IMAGES, validateImageUrl, validateLocalImage } from "../utils/mediaImages.js";
 
-const PostImagesInput = ({
-  idPrefix,
-  images,
-  onImagesChange,
-  onMessage,
-  disabled,
-}) => {
+const PostImagesInput = ({ idPrefix, images, onImagesChange, onMessage, disabled }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [isCheckingUrl, setIsCheckingUrl] = useState(false);
 
@@ -63,8 +53,7 @@ const PostImagesInput = ({
       const validatedUrl = await validateImageUrl(imageUrl);
 
       const duplicateUrl = images.some(
-        (image) =>
-          image.kind === "url" && image.url === validatedUrl,
+        (image) => image.kind === "url" && image.url === validatedUrl,
       );
 
       if (duplicateUrl) {
@@ -72,14 +61,7 @@ const PostImagesInput = ({
         return;
       }
 
-      onImagesChange([
-        ...images,
-        {
-          id: crypto.randomUUID(),
-          kind: "url",
-          url: validatedUrl,
-        },
-      ]);
+      onImagesChange([...images, { id: crypto.randomUUID(), kind: "url", url: validatedUrl }]);
 
       setImageUrl("");
     } catch (error) {
@@ -90,17 +72,13 @@ const PostImagesInput = ({
   };
 
   const handleRemove = (imageId) => {
-    const imageToRemove = images.find(
-      (image) => image.id === imageId,
-    );
+    const imageToRemove = images.find((image) => image.id === imageId);
 
     if (imageToRemove?.kind === "file") {
       URL.revokeObjectURL(imageToRemove.previewUrl);
     }
 
-    onImagesChange(
-      images.filter((image) => image.id !== imageId),
-    );
+    onImagesChange(images.filter((image) => image.id !== imageId));
   };
 
   return (
@@ -108,9 +86,7 @@ const PostImagesInput = ({
       <legend>Images</legend>
 
       <div>
-        <label htmlFor={`${idPrefix}-image-files`}>
-          Upload from your device
-        </label>
+        <label htmlFor={`${idPrefix}-image-files`}>Upload from your device</label>
 
         <input
           id={`${idPrefix}-image-files`}
@@ -121,15 +97,12 @@ const PostImagesInput = ({
         />
 
         <small>
-          Up to 6 images. Each image must be 5 MB or smaller and no
-          larger than 4096 × 4096 pixels.
+          Up to 6 images. Each image must be 5 MB or smaller and no larger than 4096 × 4096 pixels.
         </small>
       </div>
 
       <div>
-        <label htmlFor={`${idPrefix}-image-url`}>
-          Or add an image URL
-        </label>
+        <label htmlFor={`${idPrefix}-image-url`}>Or add an image URL</label>
 
         <div className="post-image-url-row">
           <input
@@ -140,11 +113,7 @@ const PostImagesInput = ({
             placeholder="https://example.com/photo.jpg"
           />
 
-          <button
-            type="button"
-            onClick={handleAddUrl}
-            disabled={disabled || isCheckingUrl}
-          >
+          <button type="button" onClick={handleAddUrl} disabled={disabled || isCheckingUrl}>
             {isCheckingUrl ? "Checking..." : "Add URL"}
           </button>
         </div>
@@ -153,17 +122,11 @@ const PostImagesInput = ({
       {images.length > 0 && (
         <div className="post-image-previews">
           {images.map((image, index) => {
-            const previewSource =
-              image.kind === "file"
-                ? image.previewUrl
-                : image.url;
+            const previewSource = image.kind === "file" ? image.previewUrl : image.url;
 
             return (
               <article className="post-image-preview" key={image.id}>
-                <img
-                  src={previewSource}
-                  alt={`Post preview ${index + 1}`}
-                />
+                <img src={previewSource} alt={`Post preview ${index + 1}`} />
 
                 <span>Image {index + 1}</span>
 

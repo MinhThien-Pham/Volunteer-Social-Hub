@@ -19,10 +19,7 @@ const PostDetail = ({ session }) => {
   const [voteMessage, setVoteMessage] = useState("");
   const [postActionMessage, setPostActionMessage] = useState("");
   const [commentsLoadMessage, setCommentsLoadMessage] = useState("");
-  const [commentActionMessage, setCommentActionMessage] = useState({
-    commentId: null,
-    text: "",
-  });
+  const [commentActionMessage, setCommentActionMessage] = useState({ commentId: null, text: "" });
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [savingCommentId, setSavingCommentId] = useState(null);
@@ -75,7 +72,8 @@ const PostDetail = ({ session }) => {
 
       const { data: commentsData, error: commentsError } = await supabase
         .from("comments")
-        .select(`
+        .select(
+          `
           id,
           content,
           created_at,
@@ -83,7 +81,8 @@ const PostDetail = ({ session }) => {
           author:profiles!comments_author_id_fkey (
             display_name
           )
-        `)
+        `,
+        )
         .eq("post_id", postData.id)
         .order("created_at", { ascending: true });
 
@@ -119,19 +118,12 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    const nextUpvotes = post.upvotes + 1;
-
     setVoteMessage("");
     setIsUpvoting(true);
 
-    const { data, error } = await supabase
-      .from("posts")
-      .update({
-        upvotes: nextUpvotes,
-      })
-      .eq("id", post.id)
-      .select("upvotes")
-      .single();
+    const { data, error } = await supabase.rpc("increment_post_upvotes", {
+      target_post_id: post.id,
+    });
 
     setIsUpvoting(false);
 
@@ -140,10 +132,7 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    setPost((currentPost) => ({
-      ...currentPost,
-      upvotes: data.upvotes,
-    }));
+    setPost((currentPost) => ({ ...currentPost, upvotes: data }));
 
     setVoteMessage("");
   };
@@ -168,11 +157,7 @@ const PostDetail = ({ session }) => {
 
     const { data, error } = await supabase
       .from("comments")
-      .insert({
-        post_id: post.id,
-        author_id: session.user.id,
-        content: trimmedContent,
-      })
+      .insert({ post_id: post.id, author_id: session.user.id, content: trimmedContent })
       .select("id, content, created_at, author_id")
       .single();
 
@@ -183,17 +168,11 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    const displayName =
-      session.user.user_metadata?.display_name ?? "Unknown member";
+    const displayName = session.user.user_metadata?.display_name ?? "Unknown member";
 
     setComments((currentComments) => [
       ...currentComments,
-      {
-        ...data,
-        author: {
-          display_name: displayName,
-        },
-      },
+      { ...data, author: { display_name: displayName } },
     ]);
 
     setCommentContent("");
@@ -234,10 +213,7 @@ const PostDetail = ({ session }) => {
     const trimmedContent = editingCommentContent.trim();
 
     if (!trimmedContent) {
-      setCommentActionMessage({
-        commentId: comment.id,
-        text: "Comment cannot be empty.",
-      });
+      setCommentActionMessage({ commentId: comment.id, text: "Comment cannot be empty." });
       return;
     }
 
@@ -246,9 +222,7 @@ const PostDetail = ({ session }) => {
 
     const { data, error } = await supabase
       .from("comments")
-      .update({
-        content: trimmedContent,
-      })
+      .update({ content: trimmedContent })
       .eq("id", comment.id)
       .eq("author_id", session.user.id)
       .select("id, content")
@@ -258,28 +232,19 @@ const PostDetail = ({ session }) => {
     setCommentActionMessage({ commentId: null, text: "" });
 
     if (error) {
-      setCommentActionMessage({
-        commentId: comment.id,
-        text: error.message,
-      });
+      setCommentActionMessage({ commentId: comment.id, text: error.message });
       return;
     }
 
     if (!data) {
-      setCommentActionMessage({
-        commentId: comment.id,
-        text: "Comment could not be updated.",
-      });
+      setCommentActionMessage({ commentId: comment.id, text: "Comment could not be updated." });
       return;
     }
 
     setComments((currentComments) =>
       currentComments.map((currentComment) =>
         currentComment.id === data.id
-          ? {
-              ...currentComment,
-              content: data.content,
-            }
+          ? { ...currentComment, content: data.content }
           : currentComment,
       ),
     );
@@ -296,9 +261,7 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this comment?",
-    );
+    const shouldDelete = window.confirm("Are you sure you want to delete this comment?");
 
     if (!shouldDelete) {
       return;
@@ -319,25 +282,17 @@ const PostDetail = ({ session }) => {
     setCommentActionMessage({ commentId: null, text: "" });
 
     if (error) {
-      setCommentActionMessage({
-        commentId: comment.id,
-        text: error.message,
-      });
+      setCommentActionMessage({ commentId: comment.id, text: error.message });
       return;
     }
 
     if (!data) {
-      setCommentActionMessage({
-        commentId: comment.id,
-        text: "Comment could not be deleted.",
-      });
+      setCommentActionMessage({ commentId: comment.id, text: "Comment could not be deleted." });
       return;
     }
 
     setComments((currentComments) =>
-      currentComments.filter(
-        (currentComment) => currentComment.id !== data.id,
-      ),
+      currentComments.filter((currentComment) => currentComment.id !== data.id),
     );
 
     if (editingCommentId === comment.id) {
@@ -353,9 +308,7 @@ const PostDetail = ({ session }) => {
       return;
     }
 
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this post?",
-    );
+    const shouldDelete = window.confirm("Are you sure you want to delete this post?");
 
     if (!shouldDelete) {
       return;
@@ -419,26 +372,16 @@ const PostDetail = ({ session }) => {
       )}
 
       <p className="post-author">
-        By{" "}
-        <Link to={`/profiles/${post.author_id}`}>
-          {authorName}
-        </Link>
+        By <Link to={`/profiles/${post.author_id}`}>{authorName}</Link>
       </p>
-      <p className="post-time">
-        {new Date(post.created_at).toLocaleString()}
-      </p>
-      <p className="post-detail-category">
-        {post.category}
-      </p>
+      <p className="post-time">{new Date(post.created_at).toLocaleString()}</p>
+      <p className="post-detail-category">{post.category}</p>
 
       <h1>{post.title}</h1>
 
       {post.content && <p className="post-content">{post.content}</p>}
 
-      <ImageCarousel
-        imageUrls={imageUrls}
-        title={post.title}
-      />
+      <ImageCarousel imageUrls={imageUrls} title={post.title} />
 
       <button
         className="vote-button"
@@ -514,17 +457,13 @@ const PostDetail = ({ session }) => {
           <p>No comments yet.</p>
         ) : (
           comments.map((comment) => {
-            const isCommentOwner =
-              session?.user?.id === comment.author_id;
+            const isCommentOwner = session?.user?.id === comment.author_id;
 
-            const isEditing =
-              editingCommentId === comment.id;
+            const isEditing = editingCommentId === comment.id;
 
-            const isSaving =
-              savingCommentId === comment.id;
+            const isSaving = savingCommentId === comment.id;
 
-            const isDeleting =
-              deletingCommentId === comment.id;
+            const isDeleting = deletingCommentId === comment.id;
 
             return (
               <article className="comment-card" key={comment.id}>
@@ -534,22 +473,16 @@ const PostDetail = ({ session }) => {
                   </Link>
                 </p>
 
-                <p className="comment-time">
-                  {new Date(comment.created_at).toLocaleString()}
-                </p>
+                <p className="comment-time">{new Date(comment.created_at).toLocaleString()}</p>
 
                 {isEditing ? (
                   <form
                     className="comment-edit-form"
-                    onSubmit={(event) =>
-                      handleCommentUpdate(event, comment)
-                    }
+                    onSubmit={(event) => handleCommentUpdate(event, comment)}
                   >
                     <textarea
                       value={editingCommentContent}
-                      onChange={(event) =>
-                        setEditingCommentContent(event.target.value)
-                      }
+                      onChange={(event) => setEditingCommentContent(event.target.value)}
                       aria-label="Edit comment"
                       disabled={isSaving}
                     />
@@ -597,8 +530,7 @@ const PostDetail = ({ session }) => {
                   </>
                 )}
 
-                {commentActionMessage.commentId === comment.id &&
-                commentActionMessage.text && (
+                {commentActionMessage.commentId === comment.id && commentActionMessage.text && (
                   <p className="inline-action-message" role="alert">
                     {commentActionMessage.text}
                   </p>

@@ -16,10 +16,7 @@ function Login() {
     setMessage("");
     setIsSubmitting(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
 
     setIsSubmitting(false);
 
@@ -72,6 +69,6 @@ function Login() {
       </p>
     </section>
   );
-};
+}
 
 export default Login;

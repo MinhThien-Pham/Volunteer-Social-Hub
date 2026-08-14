@@ -1,21 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { supabase } from "../client.js";
-import {
-  uploadAvatarImage,
-  validateImageUrl,
-  validateLocalImage,
-} from "../utils/mediaImages.js";
+import { uploadAvatarImage, validateImageUrl, validateLocalImage } from "../utils/mediaImages.js";
 
 const EditProfile = ({ session, onProfileUpdated }) => {
   const navigate = useNavigate();
   const userId = session?.user?.id;
 
-  const [profile, setProfile] = useState({
-    display_name: "",
-    avatar_url: "",
-    bio: "",
-  });
+  const [profile, setProfile] = useState({ display_name: "", avatar_url: "", bio: "" });
 
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState("");
@@ -78,10 +70,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    setProfile((currentProfile) => ({
-      ...currentProfile,
-      [name]: value,
-    }));
+    setProfile((currentProfile) => ({ ...currentProfile, [name]: value }));
   };
 
   const handleAvatarFileSelected = async (event) => {
@@ -101,10 +90,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
       setAvatarFile(file);
       setAvatarPreviewUrl(URL.createObjectURL(file));
 
-      setProfile((currentProfile) => ({
-        ...currentProfile,
-        avatar_url: "",
-      }));
+      setProfile((currentProfile) => ({ ...currentProfile, avatar_url: "" }));
     } catch (error) {
       setMessage(error.message);
     }
@@ -114,20 +100,14 @@ const EditProfile = ({ session, onProfileUpdated }) => {
     setAvatarFile(null);
     setAvatarPreviewUrl("");
 
-    setProfile((currentProfile) => ({
-      ...currentProfile,
-      avatar_url: event.target.value,
-    }));
+    setProfile((currentProfile) => ({ ...currentProfile, avatar_url: event.target.value }));
   };
 
   const handleRemoveAvatar = () => {
     setAvatarFile(null);
     setAvatarPreviewUrl("");
 
-    setProfile((currentProfile) => ({
-      ...currentProfile,
-      avatar_url: "",
-    }));
+    setProfile((currentProfile) => ({ ...currentProfile, avatar_url: "" }));
 
     setMessage("");
   };
@@ -149,10 +129,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
       let avatarUrl = profile.avatar_url.trim() || null;
 
       if (avatarFile) {
-        avatarUrl = await uploadAvatarImage(
-          avatarFile,
-          userId,
-        );
+        avatarUrl = await uploadAvatarImage(avatarFile, userId);
       } else if (avatarUrl) {
         avatarUrl = await validateImageUrl(avatarUrl);
       }
@@ -172,18 +149,12 @@ const EditProfile = ({ session, onProfileUpdated }) => {
         throw error;
       }
 
-      const { error: metadataError } =
-        await supabase.auth.updateUser({
-          data: {
-            display_name: trimmedDisplayName,
-          },
-        });
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { display_name: trimmedDisplayName },
+      });
 
       if (metadataError) {
-        console.error(
-          "Profile saved, but Auth metadata was not updated:",
-          metadataError.message,
-        );
+        console.error("Profile saved, but Auth metadata was not updated:", metadataError.message);
       }
 
       onProfileUpdated(data);
@@ -204,11 +175,9 @@ const EditProfile = ({ session, onProfileUpdated }) => {
     );
   }
 
-  const avatarSource =
-    avatarPreviewUrl || profile.avatar_url;
+  const avatarSource = avatarPreviewUrl || profile.avatar_url;
 
-  const avatarInitial =
-    profile.display_name.trim().charAt(0).toUpperCase() || "?";
+  const avatarInitial = profile.display_name.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <section>
@@ -216,9 +185,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="profile-display-name">
-            Display Name
-          </label>
+          <label htmlFor="profile-display-name">Display Name</label>
 
           <input
             id="profile-display-name"
@@ -234,11 +201,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
           <span className="avatar-editor-label">Avatar</span>
 
           {avatarSource ? (
-            <img
-              className="avatar-editor-preview"
-              src={avatarSource}
-              alt="Avatar preview"
-            />
+            <img className="avatar-editor-preview" src={avatarSource} alt="Avatar preview" />
           ) : (
             <div
               className="avatar-editor-preview avatar-editor-placeholder"
@@ -249,9 +212,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
           )}
 
           <div>
-            <label htmlFor="profile-avatar-file">
-              Upload from your device
-            </label>
+            <label htmlFor="profile-avatar-file">Upload from your device</label>
 
             <input
               id="profile-avatar-file"
@@ -261,16 +222,11 @@ const EditProfile = ({ session, onProfileUpdated }) => {
               disabled={isSubmitting}
             />
 
-            <small>
-              One image, up to 5 MB and no larger than
-              4096 × 4096 pixels.
-            </small>
+            <small>One image, up to 5 MB and no larger than 4096 × 4096 pixels.</small>
           </div>
 
           <div>
-            <label htmlFor="profile-avatar-url">
-              Or use an image URL
-            </label>
+            <label htmlFor="profile-avatar-url">Or use an image URL</label>
 
             <input
               id="profile-avatar-url"
@@ -283,11 +239,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
           </div>
 
           {avatarSource && (
-            <button
-              type="button"
-              onClick={handleRemoveAvatar}
-              disabled={isSubmitting}
-            >
+            <button type="button" onClick={handleRemoveAvatar} disabled={isSubmitting}>
               Remove Avatar
             </button>
           )}
@@ -296,12 +248,7 @@ const EditProfile = ({ session, onProfileUpdated }) => {
         <div>
           <label htmlFor="profile-bio">Bio</label>
 
-          <textarea
-            id="profile-bio"
-            name="bio"
-            value={profile.bio}
-            onChange={handleChange}
-          />
+          <textarea id="profile-bio" name="bio" value={profile.bio} onChange={handleChange} />
         </div>
 
         <button type="submit" disabled={isSubmitting}>

@@ -25,42 +25,21 @@ function Signup() {
     setMessage("");
     setIsSubmitting(true);
 
-    const { data: authData, error: authError } =
-      await supabase.auth.signUp({
-        email: trimmedEmail,
-        password,
-        options: {
-          data: {
-            display_name: trimmedDisplayName,
-          },
-        },
-      });
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: trimmedEmail,
+      password,
+      options: { data: { display_name: trimmedDisplayName } },
+    });
+
+    setIsSubmitting(false);
 
     if (authError) {
       setMessage(authError.message);
-      setIsSubmitting(false);
       return;
     }
 
     if (!authData.user) {
       setMessage("Account could not be created.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({
-        id: authData.user.id,
-        display_name: trimmedDisplayName,
-      });
-
-    setIsSubmitting(false);
-
-    if (profileError) {
-      setMessage(
-        `Account created, but profile creation failed: ${profileError.message}`,
-      );
       return;
     }
 
@@ -125,6 +104,6 @@ function Signup() {
       </p>
     </section>
   );
-};
+}
 
 export default Signup;

@@ -7,9 +7,7 @@ const Card = ({ post }) => {
   const authorName = post.author?.display_name ?? "Unknown member";
   const commentCount = post.comments?.length ?? 0;
   const handleCardClick = (event) => {
-    const interactiveElement = event.target.closest(
-      "a, button, input, textarea, select",
-    );
+    const interactiveElement = event.target.closest("a, button, input, textarea, select");
 
     if (interactiveElement) {
       return;
@@ -26,43 +24,26 @@ const Card = ({ post }) => {
           to={`/profiles/${post.author_id}`}
           aria-label={`View ${authorName}'s profile`}
         >
-          <Avatar
-            className="post-card-avatar"
-            src={post.author?.avatar_url}
-            name={authorName}
-          />
+          <Avatar className="post-card-avatar" src={post.author?.avatar_url} name={authorName} />
         </Link>
 
         <div className="post-card-byline">
-          <Link
-            className="post-card-author"
-            to={`/profiles/${post.author_id}`}
-          >
+          <Link className="post-card-author" to={`/profiles/${post.author_id}`}>
             {authorName}
           </Link>
 
-          <span className="post-card-time">
-            {new Date(post.created_at).toLocaleString()}
-          </span>
+          <span className="post-card-time">{new Date(post.created_at).toLocaleString()}</span>
         </div>
 
-        <span className="post-card-category">
-          {post.category}
-        </span>
+        <span className="post-card-category">{post.category}</span>
       </header>
 
       <div className="post-card-text">
         <h2 className="post-card-title">
-          <Link to={`/posts/${post.id}`}>
-            {post.title}
-          </Link>
+          <Link to={`/posts/${post.id}`}>{post.title}</Link>
         </h2>
 
-        {post.content && (
-          <p className="post-card-content">
-            {post.content}
-          </p>
-        )}
+        {post.content && <p className="post-card-content">{post.content}</p>}
       </div>
 
       <ImageCarousel
@@ -73,16 +54,10 @@ const Card = ({ post }) => {
       />
 
       <footer className="post-card-footer">
-        <span className="post-card-votes">
-          ↑ {post.upvotes}
-        </span>
+        <span className="post-card-votes">↑ {post.upvotes}</span>
 
-        <Link
-          className="post-card-comments"
-          to={`/posts/${post.id}`}
-        >
-          {commentCount}{" "}
-          {commentCount === 1 ? "comment" : "comments"}
+        <Link className="post-card-comments" to={`/posts/${post.id}`}>
+          {commentCount} {commentCount === 1 ? "comment" : "comments"}
         </Link>
       </footer>
     </article>
